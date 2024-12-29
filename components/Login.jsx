@@ -8,11 +8,7 @@ export default function Login() {
     const router = useRouter();
 
   return (
-    <View
-        style={{
-            height: '100%'
-        }}
-    >
+    <View>
       <Image source={require('./../assets/images/landing-wallpaper.jpg')}
         style={{
             width: '100%',

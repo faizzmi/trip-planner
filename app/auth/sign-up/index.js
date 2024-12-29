@@ -3,7 +3,7 @@ import React, { useEffect } from 'react'
 import { useNavigation, useRouter } from 'expo-router';
 import { Colors } from '../../../constants/Colors';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { auth } from '../../../configs/FirebaseConfig';
+// import { auth } from '../../../configs/FirebaseConfig';
 
 export default function SignUp() {
   const navigation = useNavigation();
@@ -15,21 +15,21 @@ export default function SignUp() {
     })
   })
 
-  const onCreateAccount = () => {
-    createUserWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-      // Signed up 
-      const user = userCredential.user;
-      console.log(user)
-      // ...
-    })
-    .catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.log(errorCode, errorMessage);
-      // ..
-    });
-  }
+  // const onCreateAccount = () => {
+  //   createUserWithEmailAndPassword(auth, email, password)
+  //   .then((userCredential) => {
+  //     // Signed up 
+  //     const user = userCredential.user;
+  //     console.log(user)
+  //     // ...
+  //   })
+  //   .catch((error) => {
+  //     const errorCode = error.code;
+  //     const errorMessage = error.message;
+  //     console.log(errorCode, errorMessage);
+  //     // ..
+  //   });
+  // }
 
   return (
     <View

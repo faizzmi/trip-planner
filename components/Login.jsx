@@ -8,8 +8,12 @@ export default function Login() {
     const router = useRouter();
 
   return (
-    <View>
-      <Image source={require('./../assets/images/react-logo.png')}
+    <View
+        style={{
+            height: '100%'
+        }}
+    >
+      <Image source={require('./../assets/images/landing-wallpaper.jpg')}
         style={{
             width: '100%',
             height:520
@@ -31,7 +35,7 @@ export default function Login() {
                 fontSize:17,
                 textAlign:'center',
                 color:Colors.GRAY,
-                marginTop:'20%'
+                marginTop:'5%'
             }}
         >
             Join thousands of happy travelers who have made their journeys unforgettable. Sign up now and let’s make your next trip your best trip yet.

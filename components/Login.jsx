@@ -31,7 +31,7 @@ export default function Login() {
                 fontSize:17,
                 textAlign:'center',
                 color:Colors.GRAY,
-                marginTop:'5%'
+                marginTop:'20%'
             }}
         >
             Join thousands of happy travelers who have made their journeys unforgettable. Sign up now and let’s make your next trip your best trip yet.

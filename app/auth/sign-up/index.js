@@ -28,6 +28,8 @@ export default function SignUp() {
       return;
     }
 
+    console.log(auth, email, password);
+
     createUserWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
       // Signed up 
@@ -38,7 +40,7 @@ export default function SignUp() {
     .catch((error) => {
       const errorCode = error.code;
       const errorMessage = error.message;
-      console.log(errorCode, errorMessage, error);
+      console.log("--", errorCode, errorMessage, error);
       // ..
     });
   }
@@ -87,7 +89,6 @@ export default function SignUp() {
           style={styles.input} 
           placeholder='Enter Email'
           onChangeText={(value) =>setEmail(value)}
-          inputMode='email'
           >
           </TextInput>
       </View>

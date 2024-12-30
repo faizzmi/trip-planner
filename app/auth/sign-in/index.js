@@ -3,16 +3,45 @@ import React, { useEffect } from 'react'
 import { useNavigation, useRouter } from 'expo-router'
 import { Colors } from './../../../constants/Colors'
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../../configs/FirebaseConfig';
 
 export default function SignIn() {
     const navigation = useNavigation();
     const router = useRouter();
+
+    const [email, setEmail] = useState();
+    const [password, setPassword] = useState();
 
     useEffect(() => {
         navigation.setOptions({
             headerShown:false
         })
     })
+
+    const onSignIn = () => {
+      if(!email && !password && !fullname){
+        console.log('Please enter all input field!');
+        // ToastAndroid.show('Please enter all input field!', ToastAndroid.LONG);
+        return;
+      }
+
+      signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        // Signed in 
+        const user = userCredential.user;
+        console.log(user);
+        // ...
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorCode, errorMessage);
+        if(errorCode == 'auth/invalid-credential'){
+          alert("Invalid credentials");
+        }
+      });
+    }
 
   return (
     <View
@@ -52,7 +81,11 @@ export default function SignIn() {
         }
       }>
         <Text>Email</Text>
-        <TextInput style={styles.input} placeholder='Enter Email'></TextInput>
+        <TextInput 
+        style={styles.input} 
+        placeholder='Enter Email'
+        onChangeText={(value) =>setFullName(value)}>
+        </TextInput>
       </View>
 
       <View style={
@@ -61,12 +94,16 @@ export default function SignIn() {
         }
       }>
         <Text>Password</Text>
-        <TextInput secureTextEntry={true} style={styles.input} placeholder='Enter Password'></TextInput>
+        <TextInput 
+        secureTextEntry={true} 
+        style={styles.input} 
+        placeholder='Enter Password'
+        onChangeText={(value) =>setFullName(value)}></TextInput>
       </View>
 
       
       <TouchableOpacity
-        onPress={() => router.replace('auth/sign-up')} 
+        onPress={onSignIn} 
         style={
         {
             marginTop: 50,

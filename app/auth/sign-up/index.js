@@ -1,13 +1,18 @@
-import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native'
-import React, { useEffect } from 'react'
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ToastAndroid } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import { useNavigation, useRouter } from 'expo-router';
 import { Colors } from '../../../constants/Colors';
 import Ionicons from '@expo/vector-icons/Ionicons';
-// import { auth } from '../../../configs/FirebaseConfig';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../../configs/FirebaseConfig';
 
 export default function SignUp() {
   const navigation = useNavigation();
   const router = useRouter();
+
+  const [fullname, setFullName] = useState();
+  const [email, setEmail] = useState();
+  const [password, setPassword] = useState();
 
   useEffect(() => {
     navigation.setOptions({
@@ -15,21 +20,28 @@ export default function SignUp() {
     })
   })
 
-  // const onCreateAccount = () => {
-  //   createUserWithEmailAndPassword(auth, email, password)
-  //   .then((userCredential) => {
-  //     // Signed up 
-  //     const user = userCredential.user;
-  //     console.log(user)
-  //     // ...
-  //   })
-  //   .catch((error) => {
-  //     const errorCode = error.code;
-  //     const errorMessage = error.message;
-  //     console.log(errorCode, errorMessage);
-  //     // ..
-  //   });
-  // }
+  const onCreateAccount = () => {
+
+    if(!email && !password && !fullname){
+      console.log('Please enter all input field!');
+      // ToastAndroid.show('Please enter all input field!', ToastAndroid.LONG);
+      return;
+    }
+
+    createUserWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      // Signed up 
+      const user = userCredential.user;
+      console.log(user)
+      // ...
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.log(errorCode, errorMessage, error);
+      // ..
+    });
+  }
 
   return (
     <View
@@ -57,7 +69,12 @@ export default function SignUp() {
         }
       }>
         <Text>Full Name</Text>
-        <TextInput style={styles.input} placeholder='Enter Full Name'></TextInput>
+        <TextInput 
+          style={styles.input} 
+          placeholder='Enter Full Name'
+          onChangeText={(value) =>setFullName(value)}
+          >
+        </TextInput>
       </View>
 
       <View style={
@@ -66,7 +83,13 @@ export default function SignUp() {
         }
       }>
         <Text>Email</Text>
-        <TextInput style={styles.input} placeholder='Enter Email'></TextInput>
+        <TextInput 
+          style={styles.input} 
+          placeholder='Enter Email'
+          onChangeText={(value) =>setEmail(value)}
+          inputMode='email'
+          >
+          </TextInput>
       </View>
 
       <View style={
@@ -75,11 +98,17 @@ export default function SignUp() {
         }
       }>
         <Text>Password</Text>
-        <TextInput secureTextEntry={true} style={styles.input} placeholder='Enter Password'></TextInput>
+        <TextInput 
+          secureTextEntry={true} 
+          style={styles.input} 
+          placeholder='Enter Password'
+          onChangeText={(value) =>setPassword(value)}
+          >
+          </TextInput>
       </View>
 
       <TouchableOpacity 
-        onPress={() => router.replace('auth/sign-up')} 
+        onPress={onCreateAccount} 
         style={
         {
             marginTop: 50,

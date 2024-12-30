@@ -1,5 +1,5 @@
 import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigation, useRouter } from 'expo-router'
 import { Colors } from './../../../constants/Colors'
 import Ionicons from '@expo/vector-icons/Ionicons';

@@ -5,6 +5,7 @@ import { Colors } from './../../../constants/Colors'
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../../configs/FirebaseConfig';
+import { replace } from 'expo-router/build/global-state/routing';
 
 export default function SignIn() {
     const navigation = useNavigation();
@@ -30,6 +31,7 @@ export default function SignIn() {
       .then((userCredential) => {
         // Signed in 
         const user = userCredential.user;
+        router,replace('/mytrip');
         console.log(user);
         // ...
       })

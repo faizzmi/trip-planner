@@ -1,13 +1,21 @@
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
-import React, { useEffect } from 'react'
+import { StyleSheet, Text, View, TouchableOpacity, ToastAndroid } from 'react-native'
+import React, { useContext, useEffect } from 'react'
 import { useNavigation, useRouter } from 'expo-router'
 import { Colors } from '../../constants/Colors';
+import { useState } from 'react';
+import CalendarPicker from "react-native-calendar-picker";
+import moment from 'moment';
+import { CreateTripContext } from '../../context/CreateTripContext';
 
 export default function SelectDates() {
 
     const navigation = useNavigation();
     const router = useRouter();
-    // buat validation mesti pilih tempat kalau xde xboleh teruskan next step
+    const [startDate, setStartDate] = useState();
+    const [endDate, setEndDate] = useState();
+    const {tripData, setTripData} = useContext(CreateTripContext);
+    
+
 
     useEffect(() => {
         navigation.setOptions({
@@ -15,7 +23,37 @@ export default function SelectDates() {
             headerTransparent: true,
             headerTitle: 'Select Dates'
         })
-    }, [])
+    }, []);
+
+    const onDateChange = (date, type) => {
+        console.log("date: ", date, type);
+        if(type==='START_DATE'){
+            setStartDate(moment(date));
+        } else {
+            setEndDate(moment(date));
+        }
+    }
+
+    const onDateSelectionCountinue = () => {
+
+        if(!startDate&&!endDate){
+            // ToastAndroid.show('Please select start and end date',ToastAndroid.LONG)
+            return;
+        }
+
+        const totalNoOfDays = endDate.diff(startDate, 'days');
+        console.log(totalNoOfDays);
+
+        setTripData({
+            ...tripData,
+            startDate: startDate,
+            endDate: endDate,
+            noOfDays: totalNoOfDays + 1
+        });
+
+        router.push('/create-trip/select-budget')
+    }
+
   return (
     <View style={{
         padding: 25,
@@ -29,8 +67,21 @@ export default function SelectDates() {
             marginTop: 20
         }}>Travel Dates</Text>
 
+        <View style={{
+            marginTop: 30
+        }}>
+            <CalendarPicker 
+            onDateChange={onDateChange}
+            allowRangeSelection={true} 
+            minDate={new Date()}
+            maxRangeDuration={7}
+            selectedRangeStyle={{ backgroundColor: Colors.PRIMARAY}}
+            selectedDayTextStyle={{ color: Colors.WHITE}}
+                />
+        </View>
+
         <TouchableOpacity
-            onPress={() => router.push('/create-trip/select-dates')}
+            onPress={onDateSelectionCountinue}
             style={{
                 marginTop: 20,
                 padding:15,

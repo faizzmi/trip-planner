@@ -10,6 +10,7 @@ export default function SearchPlace() {
     const router = useRouter();
     const [search, setSearch] = useState();
     const {tripData, setTripData} = useContext(CreateTripContext);
+    // buat validation mesti pilih tempat kalau xde xboleh teruskan next step
 
     useEffect(() =>{
         navigation.setOptions({
@@ -20,10 +21,15 @@ export default function SearchPlace() {
     }, [])
 
     useEffect(() => {
-      setTripData(search)
-      console.log(tripData);
+        if (search) {
+            setTripData((prevData) => ({
+            ...prevData,
+            locationInfo: search,
+            }));
+        }
+      console.log("trip data",tripData);
 
-    }, [tripData])
+    }, [search])
     
 
     return (

@@ -1,12 +1,14 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, Touchable, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 import { Colors } from '../../constants/Colors'
 import Ionicons from '@expo/vector-icons/Ionicons';
 import StartNewTripCard from '../../components/MyTrips/StartNewTripCard';
+import { useRouter } from 'expo-router';
 
 export default function MyTrip() {
 
     const [userTrips, setUserTrips] = useState([]);
+    const router = useRouter();
 
   return (
     <View style={{
@@ -25,7 +27,11 @@ export default function MyTrip() {
                 fontFamily: 'outfit-bold',
                 fontSize: 35
             }}>My Trips</Text>
-            <Ionicons name="add-circle" size={50} color="black" />
+            <TouchableOpacity
+                onPress = {() => router.push('/create-trip/search-place')}
+            >
+                <Ionicons name="add-circle" size={50} color="black" />
+            </TouchableOpacity>
         </View>
 
         {userTrips?.length==0?

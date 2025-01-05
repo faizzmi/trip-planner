@@ -27,9 +27,16 @@ export default function SearchPlace() {
             locationInfo: search,
             }));
         }
-      console.log("trip data",tripData);
 
-    }, [search])
+    }, [search]);
+
+    const valContinue = () => {
+        if(!search){
+            console.error('Please choose place to travel');
+            return;
+        }
+        router.push('/create-trip/select-traveler');
+    }
     
 
     return (
@@ -48,7 +55,7 @@ export default function SearchPlace() {
                 </TextInput>
             </View>
             <TouchableOpacity
-                onPress={() => router.push('/create-trip/select-traveler')}
+                onPress={valContinue}
                 style={
                 {
                     marginTop: 20,

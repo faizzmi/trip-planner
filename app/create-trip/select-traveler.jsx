@@ -16,23 +16,27 @@ export default function SelectTraveler() {
   
 // cek kenape ade item.item.case
 
-    useEffect(() =>{
-        navigation.setOptions({
-            headerShown: true,
-            headerTransparent: true,
-            headerTitle: 'Select Traveler'
-        })
-    }, []);
-
-    useEffect(() => {
-      setTripData({...tripData,
-        traveler: selectedTraveler
+  const valContinue = () => {
+      if(!selectedTraveler){
+          console.error('Please choose who to travel');
+          return;
+      }
+      router.push('/create-trip/select-dates');
+  }
+    
+  useEffect(() =>{
+      navigation.setOptions({
+          headerShown: true,
+          headerTransparent: true,
+          headerTitle: 'Select Traveler'
       })
-    }, [selectedTraveler]);
+  }, []);
 
-    useEffect(() => {
-      console.log(tripData);
-    }, [tripData])
+  useEffect(() => {
+    setTripData({...tripData,
+      traveler: selectedTraveler
+    })
+  }, [selectedTraveler]);
 
   return (
     <View style={{
@@ -70,7 +74,7 @@ export default function SelectTraveler() {
       />
 
       <TouchableOpacity
-        onPress={() => router.push('/create-trip/select-dates')}
+        onPress={valContinue}
         style={
         {
           marginTop: 20,

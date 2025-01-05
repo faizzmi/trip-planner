@@ -78,4 +78,39 @@ export const SelectBudgetOptions = [
         desc: 'Dont worry about cost',
         icon: '💰'
     },
-]
+];
+
+export const SelectTravelPreference = [
+  {
+    "id": 1,
+    "title": "Relaxed/Leisure",
+    "desc": "Peaceful settings, spa, nature",
+    "icon": "🌿"
+  },
+  {
+    "id": 2,
+    "title": "Adventure/Thrill-seeking",
+    "desc": "Adrenaline activities, outdoor exploration",
+    "icon": "⛰️"
+  },
+  {
+    "id": 3,
+    "title": "Luxury",
+    "desc": "High-end experiences, comfort, exclusivity",
+    "icon": "💎"
+  },
+  {
+    "id": 4,
+    "title": "Budget-Friendly",
+    "desc": "Affordable travel, street food, attractions",
+    "icon": "💰"
+  },
+  {
+    "id": 5,
+    "title": "Cultural/Exploratory",
+    "desc": "Learn history, traditions, local life",
+    "icon": "🌍"
+  }
+];
+
+export const AI_PROMPT = "Create a detailed travel plan in JSON format from Pahang, Malaysia to {location} as a {muslim}, for {budget} budget, with {travel_companions}, within {number_of_days} days, and {preferences} travel (e.g., adventure, relaxation, cultural experiences, or food). The JSON output should include a daily itinerary with activities, places to visit, and approximate costs under the `itinerary` key; suggestions for accommodations with price (in Ringgit Malaysia) ranges under `accommodations`; transportation options to and within the location with costs under `transportation`; meal recommendations and local dishes to try with estimated costs under `meals`; a `budget_summary` key with a breakdown of expenses (e.g., accommodations, meals, activities, and transportation) to ensure the trip stays within budget; and a `tips` key with practical advice for saving money and enhancing the travel experience. Ensure the JSON is well-structured, realistic, and actionable based on the given inputs." ; 

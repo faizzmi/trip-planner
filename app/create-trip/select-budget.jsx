@@ -46,9 +46,9 @@ export default function SelectBudget() {
     }}>
       <Text style={{
             fontFamily: 'outfit-bold',
-            fontSize: 35,
+            fontSize: 30,
             marginTop: 20
-        }}>SelectBudget</Text>
+        }}>Travel Budget</Text>
 
         <View style={{
             marginTop: 20

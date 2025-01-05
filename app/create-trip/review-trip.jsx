@@ -126,6 +126,49 @@ export default function ReviewTrip() {
             </View>
         </View>
 
+        <View style={{
+            marginTop: 25,
+            display: 'flex',
+            flexDirection: 'row',
+            gap: 20
+        }}>
+            <Text style={{fontSize:30}}>🧗</Text>
+            <View>
+                <Text style={{
+                    fontFamily: 'outfit',
+                    fontSize: 20,
+                    color: Colors.GRAY
+                }}>Preference</Text>
+                <Text style={{
+                    fontFamily: 'outfit-medium',
+                    fontSize: 20,
+                }}>{tripData?.preference}
+                </Text>
+            </View>
+        </View>
+
+        <View style={{
+            marginTop: 25,
+            display: 'flex',
+            flexDirection: 'row',
+            gap: 20
+        }}>
+            <Text style={{fontSize:30}}>🕌</Text>
+            <View>
+                <Text style={{
+                    fontFamily: 'outfit',
+                    fontSize: 20,
+                    color: Colors.GRAY
+                }}>Muslim Friendly</Text>
+                <Text style={{
+                    fontFamily: 'outfit-medium',
+                    fontSize: 20,
+                }}>{tripData?.muslimFriendly ? 'Muslim Friendly' : 'Not Muslim Friendly'}
+
+                </Text>
+            </View>
+        </View>
+
         <TouchableOpacity
             onPress={() => router.replace('/create-trip/generate-trip')}
             style={{

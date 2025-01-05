@@ -51,7 +51,7 @@ export default function SelectDates() {
             noOfDays: totalNoOfDays + 1
         });
 
-        router.push('/create-trip/select-budget')
+        router.push('/create-trip/select-preferences')
     }
 
   return (
@@ -63,7 +63,7 @@ export default function SelectDates() {
     }}>
         <Text style={{
             fontFamily: 'outfit-bold',
-            fontSize: 35,
+            fontSize: 30,
             marginTop: 20
         }}>Travel Dates</Text>
 

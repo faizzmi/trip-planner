@@ -50,7 +50,7 @@ export default function UserTripList(userTrips) {
                 }}>⚡ {latestTrip?.traveler.title}</Text>
             </View>
             <TouchableOpacity
-                onPress={() => router.push({pathname:'/trip-details', params:{tripData: userTrips[0]}})}
+                onPress={() => router.push({pathname:'/trip-details', params:{tripData: JSON.stringify(userTrips.userTrips[0])}})}
                 style={{
                     marginTop: 10,
                     padding:15,
@@ -78,9 +78,7 @@ export default function UserTripList(userTrips) {
 
         {userTrips.userTrips.map((trip, index) => {
         return(
-            <TouchableOpacity
-                onPress={() => router.push({pathname:'/trip-details', params:{tripData: JSON.stringify(userTrips.userTrips[0])}})}
-                >
+            <TouchableOpacity>
                 <UserTripCard trip={trip} key={index} />
             </TouchableOpacity>
         )}

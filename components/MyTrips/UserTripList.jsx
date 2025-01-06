@@ -36,7 +36,7 @@ export default function UserTripList({ userTrips }) {
                     <Text style={{
                         fontFamily: 'outfit-bold',
                         fontSize: 20
-                    }}>Upcoming Trip</Text>
+                    }}>Next Trip</Text>
                     <Image
                         source={require('./../../assets/images/card-trip.jpg')}
                         style={{
@@ -96,13 +96,17 @@ export default function UserTripList({ userTrips }) {
             <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 20 }}>
                 <View style={{ flex: 1, height: 1, backgroundColor: Colors.GRAY }} />
                 <View>
-                    <Text style={{ width: 100, textAlign: 'center' }}>Latest Trip</Text>
+                    <Text style={{ width: 100, textAlign: 'center' }}>Upcoming Trip</Text>
                 </View>
                 <View style={{ flex: 1, height: 1, backgroundColor: Colors.GRAY }} />
             </View>
 
             {sortedTrips.slice(1).map((trip, index) => (
-                <TouchableOpacity key={index}>
+                <TouchableOpacity key={index}
+                    onPress={() => router.push({
+                        pathname: '/trip-details',
+                        params: { tripData: JSON.stringify(trip) }
+                    })}>
                     <UserTripCard trip={trip} />
                 </TouchableOpacity>
             ))}

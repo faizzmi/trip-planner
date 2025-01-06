@@ -35,17 +35,24 @@ export default function TripPlan({details}) {
                             textAlign: 'justify'
                         }}>{place?.placeDetails}</Text>
                     </View>
-                    <View>
-                        <Text style={{
-                            fontFamily: 'outfit',
-                            fontSize: 17
-                        }}>🎟️ <Text style={{ fontFamily: 'outfit' }}>{place?.ticketPricing}</Text></Text>
+                    <View style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: 8
+                    }}>
+                        <View>
+                            <Text style={{
+                                fontFamily: 'outfit',
+                                fontSize: 17
+                            }}>🎟️ <Text style={{ fontFamily: 'outfit' }}>{place?.ticketPricing}</Text></Text>
 
-                        <Text style={{
-                            fontFamily: 'outfit',
-                            fontSize: 17
-                        }}>⌛ <Text style={{ fontFamily: 'outfit-bold' }}>{place?.timeTravel}</Text></Text>
-                        
+                            <Text style={{
+                                fontFamily: 'outfit',
+                                fontSize: 17
+                            }}>⌛ <Text style={{ fontFamily: 'outfit-bold' }}>{place?.timeTravel}</Text></Text>
+                        </View>
                         <View>
                             <TouchableOpacity
                                 // onPress={() => router.push({
@@ -53,19 +60,11 @@ export default function TripPlan({details}) {
                                 //     params: { tripData: JSON.stringify(upcomingTrip) }
                                 // })}
                                 style={{
-                                    margin: 10,
-                                    padding: 5,
+                                    padding: 8,
                                     backgroundColor: Colors.PRIMARAY,
                                     borderRadius: 7,
                                 }}>
-                                <Text
-                                    style={{
-                                        color: Colors.WHITE,
-                                        textAlign: 'center',
-                                        fontFamily: 'outfit-medium',
-                                        fontSize: 15
-                                    }}
-                                ><Ionicons name="navigate" size={15} color={Colors.WHITE} /> See your plan</Text>
+                                <Ionicons name="navigate" size={20} color={Colors.WHITE} />
                             </TouchableOpacity>
                         </View>
                     </View>

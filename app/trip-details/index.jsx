@@ -1,6 +1,6 @@
-import { Image, StyleSheet, Text, View, ScrollView } from 'react-native';
+import { Image, StyleSheet, Text, View, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { useLocalSearchParams, useNavigation } from 'expo-router';
+import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { Colors } from '../../constants/Colors';
 import moment from 'moment';
 import FlightInfo from '../../components/TripDetails/FlightInfo';
@@ -11,12 +11,18 @@ export default function TripDetails() {
   const navigation = useNavigation();
   const { tripData } = useLocalSearchParams(); 
   const [tripDetails, setTripDetails] = useState();
+  const router = useRouter();
 
   useEffect(() => {
     navigation.setOptions({
       headerShown: true,
       headerTransparent: true,
       headerTitle: '',
+      headerLeft: () => (
+        <TouchableOpacity onPress={() => router.push('./mytrip')}>
+          <Text style={{ fontSize: 24, marginLeft: 15 }}>📌</Text>
+        </TouchableOpacity>
+      ),
     });
 
     if (tripData) {
@@ -30,7 +36,7 @@ export default function TripDetails() {
   }, [tripData, navigation]);
 
   if (!tripDetails) {
-    return <Text>Loading...</Text>;
+    return <ActivityIndicator size="large" color={Colors.PRIMARAY} />;
   }
 
   const { tripPlan, tripData: rawTripData } = tripDetails;

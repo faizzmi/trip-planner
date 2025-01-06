@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Linking } from 'react-native';
 import React from 'react';
 import { Colors } from '../../constants/Colors';
 
@@ -6,6 +6,13 @@ export default function FlightInfo({ flightData }) {
   if (!flightData) {
     return <Text>No flight information available</Text>;
   }
+
+  const handleNavigateToWebsite = () => {
+    const url = flightData.bookingUrl;
+    Linking.openURL(url).catch((err) => {
+      console.error('Failed to open URL:', err);
+    });
+  };
 
   return (
     <View
@@ -43,6 +50,7 @@ export default function FlightInfo({ flightData }) {
                 backgroundColor: Colors.PRIMARAY,
                 borderRadius: 7,
                 }}
+                onPress={handleNavigateToWebsite}
             >
                 <Text
                 style={{

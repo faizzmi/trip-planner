@@ -93,7 +93,7 @@ export default function GenerateTrip() {
         {/* Replacing the GIF with a spinning loader */}
         <ActivityIndicator
           size="large"
-          color="green"
+          color= {Colors.WHITE}
           style={{
             marginTop: 75,
             marginBottom: 75,

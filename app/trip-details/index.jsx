@@ -1,14 +1,16 @@
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View, ScrollView } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
 import { Colors } from '../../constants/Colors';
 import moment from 'moment';
 import FlightInfo from '../../components/TripDetails/FlightInfo';
+import HotelList from '../../components/TripDetails/HotelList';
+import TripPlan from '../../components/TripDetails/TripPlan';
 
 export default function TripDetails() {
   const navigation = useNavigation();
-  const { tripData } = useLocalSearchParams(); // Access route params
-  const [tripDetails, setTripDetails] = useState(); // Initialize as null
+  const { tripData } = useLocalSearchParams(); 
+  const [tripDetails, setTripDetails] = useState();
 
   useEffect(() => {
     navigation.setOptions({
@@ -27,15 +29,15 @@ export default function TripDetails() {
     }
   }, [tripData, navigation]);
 
-//   if (!tripDetails) {
-//     return <Text>Loading...</Text>;
-//   }
+  if (!tripDetails) {
+    return <Text>Loading...</Text>;
+  }
 
   const { tripPlan, tripData: rawTripData } = tripDetails;
   const parsedTripData = JSON.parse(rawTripData);
 
   return (
-    <View>
+    <ScrollView>
       <Image
         source={require('./../../assets/images/card-trip.jpg')}
         style={{
@@ -82,9 +84,14 @@ export default function TripDetails() {
         </Text>
 
         <FlightInfo flightData={tripPlan?.flightDetails} />
+
+        <HotelList hotelList={tripPlan?.hotelOptions}/>
+
+        <TripPlan details={tripPlan?.dailyItinerary}/>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({});
+

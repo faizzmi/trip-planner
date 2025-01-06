@@ -14,6 +14,7 @@ export default function FlightInfo({ flightData }) {
         backgroundColor: Colors.LIGHT_GRAY,
         borderRadius: 15,
         padding: 10,
+        borderColor: Colors.GRAY,
         borderWidth: 1
       }}
     >

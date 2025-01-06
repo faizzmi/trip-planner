@@ -16,7 +16,7 @@ export default function MyTrip() {
 
     useEffect(() => {
         if (user) GetMyTrip();
-    }, [user]);
+    }, []);
 
     const GetMyTrip = async () => {
         setLoading(true);

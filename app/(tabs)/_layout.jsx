@@ -3,6 +3,7 @@ import React from 'react'
 import { Tabs } from 'expo-router'
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Colors } from '../../constants/Colors';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 export default function TabLayout() {
   return (
@@ -22,6 +23,12 @@ export default function TabLayout() {
                 tabBarIcon:({color})=><Ionicons name="globe-sharp" size={24} color="black" />
             }}
             />
+        {/* <Tabs.Screen name='history' 
+            options={{
+                tabBarLabel:'History',
+                tabBarIcon:({color})=><MaterialIcons name="history" size={24} color="black" />
+            }}
+            /> */}
         <Tabs.Screen name='profile' 
             options={{
                 tabBarLabel:'My Profile',

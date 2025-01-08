@@ -1,103 +1,180 @@
-import { Image, StyleSheet, Text, View, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { StyleSheet, Image, Text, View, ScrollView, TextInput, TouchableOpacity } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
+import { auth } from './../../configs/FirebaseConfig';
+import { useNavigation, useRouter } from 'expo-router';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { Colors } from '../../constants/Colors';
-import moment from 'moment';
-import FlightInfo from '../../components/TripDetails/FlightInfo';
-import HotelList from '../../components/TripDetails/HotelList';
-import TripPlan from '../../components/TripDetails/TripPlan';
+import { getAuth, signOut } from 'firebase/auth';
+import ModalMessage from '../../components/ModalMessage';
 
-export default function TripDetails() {
+export default function Profile() {
+  const user = auth.currentUser;
   const navigation = useNavigation();
-  const { tripData } = useLocalSearchParams(); 
-  const [tripDetails, setTripDetails] = useState();
   const router = useRouter();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     navigation.setOptions({
       headerShown: true,
       headerTransparent: true,
       headerTitle: '',
-      headerLeft: () => (
-        <TouchableOpacity onPress={() => router.push('./mytrip')}>
-          <Text style={{ fontSize: 24, marginLeft: 15 }}>📌</Text>
+      headerRight: () => (
+        <TouchableOpacity onPress={() => setModalVisible(true)}>
+          <Ionicons style={{ marginRight: 15 }} name="log-out" size={24} color="black" />
         </TouchableOpacity>
       ),
     });
+  }, []);
 
-    if (tripData) {
-      try {
-        const parsedData = JSON.parse(tripData);
-        setTripDetails(parsedData);
-      } catch (error) {
-        console.error('Error parsing tripData:', error);
-      }
+  const handleLogOut = (logout) => {
+    const logOut = getAuth();
+    if (logout) {
+      signOut(logOut)
+        .then(() => {
+          router.replace('auth/sign-in');
+        })
+        .catch((error) => {
+          console.error('Logout error: ', error);
+        });
+    } else {
+      setModalVisible(false);
     }
-  }, [tripData, navigation]);
+  };
 
-  if (!tripDetails) {
-    return <ActivityIndicator size="large" color={Colors.PRIMARAY} />;
-  }
-
-  const { tripPlan, tripData: rawTripData } = tripDetails;
-  const parsedTripData = JSON.parse(rawTripData);
+  const toggleEdit = () => {
+    setIsEditing(!isEditing);
+  };
 
   return (
-    <ScrollView>
-      <Image
-        source={require('./../../assets/images/card-trip.jpg')}
-        style={{
-          width: '100%',
-          height: 330,
-        }}
-      />
-      <View
-        style={{
-          marginTop: -30,
-          padding: 15,
-          height: '100%',
-          backgroundColor: Colors.WHITE,
-          borderTopLeftRadius: 15,
-          borderTopRightRadius: 15,
-        }}
-      >
-        <Text
-          style={{
-            fontSize: 30,
-            fontFamily: 'outfit-bold',
-          }}
-        >
-          {tripPlan?.tripDetails?.destination}
-        </Text>
+    <ScrollView style={styles.container}>
+      <Text style={styles.title}>My Profile</Text>
+      <View style={styles.profileSection}>
+        <Image source={require('./../../assets/images/profile-picture.jpg')} style={styles.profileImage} />
+        <Text style={styles.name}>{user?.displayName || 'Your Name'}</Text>
+      </View>
 
-        <View style={{ flexDirection: 'row', gap: 10, marginTop: 5 }}>
-          <Text style={{ fontSize: 18, fontFamily: 'outfit' }}>
-            {moment(parsedTripData.startDate).format('DD MMM YYYY')}
-          </Text>
-          <Text style={{ fontSize: 18, fontFamily: 'outfit' }}>
-            {moment(parsedTripData.endDate).format('DD MMM YYYY')}
-          </Text>
+      <View style={styles.detailsSection}>
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Name</Text>
+          <TextInput
+            style={[styles.input, !isEditing && styles.disableInput]}
+            placeholder="Your Name"
+            value={user?.displayName || ''}
+            editable={isEditing}
+          />
         </View>
 
-        <Text
-          style={{
-            fontSize: 18,
-            fontFamily: 'outfit',
-            marginTop: 10,
-          }}
-        >
-          ⚡ {parsedTripData.traveler?.title}
-        </Text>
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Email</Text>
+          <TextInput
+            style={[styles.input, styles.disableInput]}
+            placeholder="Your Email"
+            value={user?.email || ''}
+            editable={false}
+          />
+        </View>
 
-        <FlightInfo flightData={tripPlan?.flightDetails} />
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Phone Number</Text>
+          <TextInput
+            style={[styles.input, !isEditing && styles.disableInput]}
+            placeholder="Your Phone Number"
+            value={user?.phoneNumber || ''}
+            editable={isEditing}
+          />
+        </View>
 
-        <HotelList hotelList={tripPlan?.hotelOptions}/>
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Nationality</Text>
+          <TextInput
+            style={[styles.input, !isEditing && styles.disableInput]}
+            placeholder="Your Nationality"
+            editable={isEditing}
+          />
+        </View>
 
-        <TripPlan details={tripPlan?.dailyItinerary}/>
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Religion</Text>
+          <TextInput
+            style={[styles.input, !isEditing && styles.disableInput]}
+            placeholder="Your Religion"
+            editable={isEditing}
+          />
+        </View>
       </View>
+
+      <TouchableOpacity style={styles.editButton} onPress={toggleEdit}>
+        <Text style={styles.editButtonText}>{isEditing ? 'Save' : 'Edit Profile'}</Text>
+      </TouchableOpacity>
+
+      <ModalMessage
+        visible={modalVisible}
+        message="Are you sure you want to log out?"
+        onClose={() => setModalVisible(false)}
+        onConfirm={handleLogOut}
+      />
     </ScrollView>
   );
 }
 
-const styles = StyleSheet.create({});
-
+const styles = StyleSheet.create({
+  container: {
+    padding: 25,
+    paddingTop: 55,
+    backgroundColor: Colors.WHITE,
+    height: '100%',
+  },
+  title: {
+    fontFamily: 'outfit-bold',
+    fontSize: 35,
+    marginBottom: 10,
+  },
+  profileSection: {
+    alignItems: 'center',
+    marginBottom: 30,
+  },
+  profileImage: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+  },
+  name: {
+    marginTop: 10,
+    fontFamily: 'outfit-bold',
+    fontSize: 20,
+  },
+  detailsSection: {
+    marginBottom: 20,
+  },
+  inputGroup: {
+    marginVertical: 15,
+  },
+  label: {
+    fontFamily: 'outfit-bold',
+    fontSize: 17,
+    marginBottom: 5,
+  },
+  input: {
+    padding: 15,
+    borderWidth: 1,
+    borderRadius: 15,
+    borderColor: Colors.GRAY,
+    fontFamily: 'outfit',
+  },
+  disableInput: {
+    backgroundColor: Colors.LIGHT_GRAY,
+    color: Colors.GRAY,
+  },
+  editButton: {
+    backgroundColor: Colors.PRIMARY,
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  editButtonText: {
+    color: Colors.WHITE,
+    fontFamily: 'outfit-bold',
+    fontSize: 16,
+  },
+});

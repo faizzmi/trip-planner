@@ -4,7 +4,6 @@ import { Colors } from '../../constants/Colors'
 
 export default function HotelList({hotelList}) {
 
-    console.log(hotelList)
   return (
     <View style={{marginTop: 20}}>
       <Text style={{

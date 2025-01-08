@@ -14,7 +14,7 @@ export default function TripPlan({details}) {
       {Object.entries(details).map(([day, details]) => (
         <View>
             <Text style={{ fontFamily: "outfit-medium", fontSize: 20, marginTop: 20}}>Day {Number(day) + 1}</Text>
-            {details.activities.map((place,index) => (
+            {details.activities.map((place, index) => (
                 <View style={{backgroundColor: Colors.LIGHT_GRAY, borderRadius: 15, borderColor: Colors.DARK_GRAY, borderWidth: 1, marginTop: 20}}>
                      <Image source={require('./../../assets/images/card-trip.jpg')}
                         style={{

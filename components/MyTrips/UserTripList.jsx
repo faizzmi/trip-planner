@@ -8,26 +8,31 @@ import { useRouter } from 'expo-router';
 export default function UserTripList({ userTrips }) {
     const router = useRouter();
 
+    const now = new Date();
+    const isCurrentTrip = (trip) => {
+        const startDate = new Date(JSON.parse(trip.tripData).startDate);
+        const endDate = new Date(JSON.parse(trip.tripData).endDate);
+        return now >= startDate && now <= endDate;
+    };
+
     const sortedTrips = [...userTrips].sort((a, b) => {
         const dateA = new Date(JSON.parse(a.tripData).startDate);
         const dateB = new Date(JSON.parse(b.tripData).startDate);
         return dateA - dateB;
     });
 
-    const now = new Date();
     const nearestTripIndex = sortedTrips.findIndex((trip) => {
         const tripDate = new Date(JSON.parse(trip.tripData).startDate);
-        return tripDate >= now;
+        return tripDate >= now || isCurrentTrip(trip);
     });
 
     const upcomingTrip = nearestTripIndex !== -1 ? sortedTrips[nearestTripIndex] : null;
-    
+    const tripLabel = upcomingTrip && isCurrentTrip(upcomingTrip) ? "Ongoing Trip" : "Next Trip";
+
     // Past trips are extracted, sorted in descending 
     // const historyTrips = nearestTripIndex !== -1
     //     ? sortedTrips.slice(0, nearestTripIndex).reverse()
     //     : [...sortedTrips].reverse();
-
-    console.log(sortedTrips.slice(1))
 
     return (
         <View style={{ marginTop: 10 }}>
@@ -36,7 +41,7 @@ export default function UserTripList({ userTrips }) {
                     <Text style={{
                         fontFamily: 'outfit-bold',
                         fontSize: 20
-                    }}>Next Trip</Text>
+                    }}>{tripLabel}</Text>
                     <Image
                         source={require('./../../assets/images/card-trip.jpg')}
                         style={{
@@ -62,7 +67,10 @@ export default function UserTripList({ userTrips }) {
                                 fontFamily: 'outfit',
                                 fontSize: 17,
                                 color: Colors.GRAY
-                            }}>{moment(JSON.parse(upcomingTrip.tripData)?.startDate).format('DD MMM YYYY')}</Text>
+                            }}>
+                                {moment(JSON.parse(upcomingTrip.tripData)?.startDate).format('DD MMM YYYY')}
+                                 - 
+                                {moment(JSON.parse(upcomingTrip.tripData)?.endDate).format('DD MMM YYYY')}</Text>
                             <Text style={{
                                 fontFamily: 'outfit',
                                 fontSize: 17,

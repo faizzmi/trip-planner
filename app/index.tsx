@@ -13,13 +13,11 @@ export default function Index() {
                 flex: 1,
             }}
         >
-            <Redirect href={'/mytrip'} />
-
-            {/* no internet to login
+           
             {user? 
                 <Redirect href={'/mytrip'} /> :
                 <Login />
-            } */}
+            }
         </View>
     )
 }

@@ -41,7 +41,6 @@ export default function GenerateTrip() {
             docId: docId
         })
         
-        // router.push;
         router.push({
             pathname: '/trip-details',
             params: { tripData: JSON.stringify(result_) }

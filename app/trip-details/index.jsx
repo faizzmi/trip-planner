@@ -1,180 +1,172 @@
-import { StyleSheet, Image, Text, View, ScrollView, TextInput, TouchableOpacity } from 'react-native';
+import { Image, StyleSheet, Text, View, ScrollView, ActivityIndicator, TouchableOpacity, Modal, Pressable } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { auth } from './../../configs/FirebaseConfig';
-import { useNavigation, useRouter } from 'expo-router';
-import Ionicons from '@expo/vector-icons/Ionicons';
+import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { Colors } from '../../constants/Colors';
-import { getAuth, signOut } from 'firebase/auth';
+import moment from 'moment';
+import FlightInfo from '../../components/TripDetails/FlightInfo';
+import HotelList from '../../components/TripDetails/HotelList';
+import TripPlan from '../../components/TripDetails/TripPlan';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { deleteDoc, doc } from 'firebase/firestore';
+import { db } from '../../configs/FirebaseConfig';
 import ModalMessage from '../../components/ModalMessage';
 
-export default function Profile() {
-  const user = auth.currentUser;
+export default function TripDetails() {
   const navigation = useNavigation();
   const router = useRouter();
+  const { tripData } = useLocalSearchParams(); 
+  const [tripDetails, setTripDetails] = useState();
   const [modalVisible, setModalVisible] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     navigation.setOptions({
       headerShown: true,
       headerTransparent: true,
       headerTitle: '',
+      headerLeft: () => (
+        <TouchableOpacity onPress={() => router.push('./mytrip')}>
+          <Ionicons style={{ marginLeft: 15 }} name="chevron-back-circle" size={24} color="white" />
+        </TouchableOpacity>
+      ),
       headerRight: () => (
         <TouchableOpacity onPress={() => setModalVisible(true)}>
-          <Ionicons style={{ marginRight: 15 }} name="log-out" size={24} color="black" />
+          <MaterialIcons style={{ marginRight: 15 }} name="delete" size={24} color="red" />
         </TouchableOpacity>
       ),
     });
-  }, []);
 
-  const handleLogOut = (logout) => {
-    const logOut = getAuth();
-    if (logout) {
-      signOut(logOut)
-        .then(() => {
-          router.replace('auth/sign-in');
-        })
-        .catch((error) => {
-          console.error('Logout error: ', error);
-        });
-    } else {
-      setModalVisible(false);
+    if (tripData) {
+      try {
+        const parsedData = JSON.parse(tripData);
+        setTripDetails(parsedData);
+      } catch (error) {
+        console.error('Error parsing tripData:', error);
+      }
     }
+  }, [tripData, navigation]);
+
+  const handleDelete = (confirmed) => {
+    if (confirmed) {
+      console.log("Trip deleted"); 
+      deleteTrip();
+      router.replace('/mytrip');
+    }
+    setModalVisible(false);
   };
 
-  const toggleEdit = () => {
-    setIsEditing(!isEditing);
-  };
+  
+ const deleteTrip = async () => {
+  try {
+    if (!tripDetails?.docId) {
+      throw new Error('Trip ID not found.');
+    }
+
+    const tripDocRef = doc(db, 'UserTrips', tripDetails.docId); 
+    await deleteDoc(tripDocRef);
+    console.log('Trip successfully deleted');
+  } catch (error) {
+    console.error('Error deleting trip:', error);
+  } finally {
+    setLoading(false); 
+  }
+};
+
+
+  if (!tripDetails) {
+    return <ActivityIndicator size="large" color={Colors.PRIMARAY} />;
+  }
+
+  const { tripPlan, tripData: rawTripData } = tripDetails;
+  const parsedTripData = JSON.parse(rawTripData);
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>My Profile</Text>
-      <View style={styles.profileSection}>
-        <Image source={require('./../../assets/images/profile-picture.jpg')} style={styles.profileImage} />
-        <Text style={styles.name}>{user?.displayName || 'Your Name'}</Text>
+    <ScrollView>
+      <Image
+        source={require('./../../assets/images/card-trip.jpg')}
+        style={{
+          width: '100%',
+          height: 330,
+        }}
+      />
+      <View
+        style={{
+          marginTop: -30,
+          padding: 15,
+          height: '100%',
+          backgroundColor: Colors.WHITE,
+          borderTopLeftRadius: 15,
+          borderTopRightRadius: 15,
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 30,
+            fontFamily: 'outfit-bold',
+          }}
+        >
+          {tripPlan?.tripDetails?.destination}
+        </Text>
+
+        <View style={{ flexDirection: 'row', gap: 10, marginTop: 5 }}>
+          <Text style={{ fontSize: 18, fontFamily: 'outfit' }}>
+            {moment(parsedTripData.startDate).format('DD MMM YYYY')}
+          </Text>
+          <Text style={{ fontSize: 18, fontFamily: 'outfit' }}>
+            {moment(parsedTripData.endDate).format('DD MMM YYYY')}
+          </Text>
+        </View>
+
+        <Text
+          style={{
+            fontSize: 18,
+            fontFamily: 'outfit',
+            marginTop: 10,
+          }}
+        >
+          ⚡ {parsedTripData.traveler?.title}
+        </Text>
+
+        <FlightInfo flightData={tripPlan?.flightDetails} />
+
+        <HotelList hotelList={tripPlan?.hotelOptions} />
+
+        <TripPlan details={tripPlan?.dailyItinerary} />
       </View>
-
-      <View style={styles.detailsSection}>
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Name</Text>
-          <TextInput
-            style={[styles.input, !isEditing && styles.disableInput]}
-            placeholder="Your Name"
-            value={user?.displayName || ''}
-            editable={isEditing}
-          />
-        </View>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Email</Text>
-          <TextInput
-            style={[styles.input, styles.disableInput]}
-            placeholder="Your Email"
-            value={user?.email || ''}
-            editable={false}
-          />
-        </View>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Phone Number</Text>
-          <TextInput
-            style={[styles.input, !isEditing && styles.disableInput]}
-            placeholder="Your Phone Number"
-            value={user?.phoneNumber || ''}
-            editable={isEditing}
-          />
-        </View>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Nationality</Text>
-          <TextInput
-            style={[styles.input, !isEditing && styles.disableInput]}
-            placeholder="Your Nationality"
-            editable={isEditing}
-          />
-        </View>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Religion</Text>
-          <TextInput
-            style={[styles.input, !isEditing && styles.disableInput]}
-            placeholder="Your Religion"
-            editable={isEditing}
-          />
-        </View>
-      </View>
-
-      <TouchableOpacity style={styles.editButton} onPress={toggleEdit}>
-        <Text style={styles.editButtonText}>{isEditing ? 'Save' : 'Edit Profile'}</Text>
-      </TouchableOpacity>
 
       <ModalMessage
-        visible={modalVisible}
-        message="Are you sure you want to log out?"
-        onClose={() => setModalVisible(false)}
-        onConfirm={handleLogOut}
-      />
+          visible={modalVisible}
+          message="Are you sure you want to delete this trip?"
+          onClose={() => setModalVisible(false)}
+          onConfirm={handleDelete}
+        />
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 25,
-    paddingTop: 55,
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
     backgroundColor: Colors.WHITE,
-    height: '100%',
-  },
-  title: {
-    fontFamily: 'outfit-bold',
-    fontSize: 35,
-    marginBottom: 10,
-  },
-  profileSection: {
-    alignItems: 'center',
-    marginBottom: 30,
-  },
-  profileImage: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-  },
-  name: {
-    marginTop: 10,
-    fontFamily: 'outfit-bold',
-    fontSize: 20,
-  },
-  detailsSection: {
-    marginBottom: 20,
-  },
-  inputGroup: {
-    marginVertical: 15,
-  },
-  label: {
-    fontFamily: 'outfit-bold',
-    fontSize: 17,
-    marginBottom: 5,
-  },
-  input: {
-    padding: 15,
-    borderWidth: 1,
-    borderRadius: 15,
-    borderColor: Colors.GRAY,
-    fontFamily: 'outfit',
-  },
-  disableInput: {
-    backgroundColor: Colors.LIGHT_GRAY,
-    color: Colors.GRAY,
-  },
-  editButton: {
-    backgroundColor: Colors.PRIMARY,
-    padding: 15,
+    padding: 20,
     borderRadius: 10,
-    alignItems: 'center',
+    width: '80%',
+    elevation: 5,
   },
-  editButtonText: {
-    color: Colors.WHITE,
-    fontFamily: 'outfit-bold',
+  modalText: {
+    fontFamily: 'outfit',
     fontSize: 16,
+    color: Colors.BLACK,
+    textAlign: 'center',
+  },
+  modalItem: {
+    paddingVertical: 10,
+    alignItems: 'center',
   },
 });

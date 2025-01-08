@@ -29,11 +29,6 @@ export default function UserTripList({ userTrips }) {
     const upcomingTrip = nearestTripIndex !== -1 ? sortedTrips[nearestTripIndex] : null;
     const tripLabel = upcomingTrip && isCurrentTrip(upcomingTrip) ? "Ongoing Trip" : "Next Trip";
 
-    // Past trips are extracted, sorted in descending 
-    // const historyTrips = nearestTripIndex !== -1
-    //     ? sortedTrips.slice(0, nearestTripIndex).reverse()
-    //     : [...sortedTrips].reverse();
-
     return (
         <View style={{ marginTop: 10 }}>
             {upcomingTrip && (

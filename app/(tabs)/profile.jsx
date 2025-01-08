@@ -1,5 +1,5 @@
 import { StyleSheet, Image, Text, View, ScrollView, TextInput, TouchableOpacity } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { auth } from './../../configs/FirebaseConfig';
 import { useNavigation, useRouter } from 'expo-router';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -206,13 +206,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   editButton: {
-    backgroundColor: Colors.PRIMARAY,
+    backgroundColor: Colors.LIGHT_GRAY,
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: Colors.DARK_GRAY
   },
   editButtonText: {
-    color: Colors.WHITE,
+    color: Colors.PRIMARAY,
     fontFamily: 'outfit-bold',
     fontSize: 16,
   },

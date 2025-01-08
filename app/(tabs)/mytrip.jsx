@@ -53,12 +53,16 @@ export default function MyTrip() {
                 </TouchableOpacity>
             </View>
 
-            {loading && <ActivityIndicator size="large" color={Colors.PRIMARAY} />}
-
-            {userTrips.length === 0
-                ? <StartNewTripCard />
-                : <UserTripList userTrips={userTrips} />
+            {loading ? 
+                (  <View style={{ marginTop: 20 }}>
+                    <ActivityIndicator size="large" color={Colors.PRIMARAY} />
+                </View> ) : 
+                ( userTrips.length === 0 ? 
+                    ( <StartNewTripCard /> ) : 
+                    ( <UserTripList userTrips={userTrips} /> )
+                )
             }
+
         </ScrollView>
     );
 }

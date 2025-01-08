@@ -109,15 +109,29 @@ export default function UserTripList({ userTrips }) {
                 <View style={{ flex: 1, height: 1, backgroundColor: Colors.GRAY }} />
             </View>
 
-            {sortedTrips.slice(1).map((trip, index) => (
-                <TouchableOpacity key={index}
-                    onPress={() => router.push({
-                        pathname: '/trip-details',
-                        params: { tripData: JSON.stringify(trip) }
-                    })}>
-                    <UserTripCard trip={trip} />
-                </TouchableOpacity>
-            ))}
+            { sortedTrips.slice(1).length > 0 ?
+                (sortedTrips.slice(1).map((trip, index) => (
+                    <TouchableOpacity key={index}
+                        onPress={() => router.push({
+                            pathname: '/trip-details',
+                            params: { tripData: JSON.stringify(trip) }
+                        })}>
+                        <UserTripCard trip={trip} />
+                    </TouchableOpacity>
+                )))
+                :
+                <Text
+                    style={{
+                        textAlign: 'center',
+                        fontFamily: 'outfit',
+                        fontSize: 16,
+                        color: Colors.GRAY,
+                        marginTop: 20,
+                    }}
+                >
+                    No upcoming trips planned.
+                </Text>
+            }
         </View>
     );
 }

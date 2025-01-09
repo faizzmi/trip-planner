@@ -3,6 +3,8 @@ import React, { useContext, useEffect, useState } from 'react'
 import { useNavigation, useRouter } from 'expo-router'
 import { Colors } from '../../constants/Colors';
 import { CreateTripContext } from './../../context/CreateTripContext'
+import PlaceCard from '../../components/CreateTrip/placeCard';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 export default function SearchPlace() {
 
@@ -10,7 +12,6 @@ export default function SearchPlace() {
     const router = useRouter();
     const [search, setSearch] = useState();
     const {tripData, setTripData} = useContext(CreateTripContext);
-    // buat validation mesti pilih tempat kalau xde xboleh teruskan next step
 
     useEffect(() =>{
         navigation.setOptions({
@@ -47,42 +48,56 @@ export default function SearchPlace() {
             height: '100%'
         }}>
             <View style={{ marginTop: 25 }}>
-                <TextInput 
-                    style={styles.input} 
-                    placeholder='Search Place'
-                    onChangeText={(value) => setSearch(value)}
-                >
-                </TextInput>
+                <View style={styles.searchBar} >
+                    <TextInput 
+                    style={{width: '90%'}}
+                        placeholder='Search Place'
+                        onChangeText={(value) => setSearch(value)}
+                    >
+                    </TextInput>
+                    <Ionicons
+                    style={{ width: '10%'}} name="search" size={24} color="black" />
+                </View>
             </View>
-            <TouchableOpacity
-                onPress={valContinue}
-                style={
-                {
-                    marginTop: 20,
-                    padding:15,
-                    backgroundColor:Colors.PRIMARAY,
-                    borderRadius:15,
-                }
-            }>
-                <Text
-                    style={{
-                        color:Colors.WHITE,
-                        textAlign:'center',
-                        fontFamily: 'outfit-medium',
-                        fontSize: 20
-                    }}
-                >Countinue</Text>
-            </TouchableOpacity>
+
+            <View style={{ marginTop: 20 }}>
+
+                <PlaceCard />
+                
+                <TouchableOpacity
+                    onPress={valContinue}
+                    style={
+                    {
+                        marginTop: 20,
+                        padding:15,
+                        backgroundColor:Colors.PRIMARAY,
+                        borderRadius:15,
+                    }
+                }>
+                    <Text
+                        style={{
+                            color:Colors.WHITE,
+                            textAlign:'center',
+                            fontFamily: 'outfit-medium',
+                            fontSize: 20
+                        }}
+                    >Countinue</Text>
+                </TouchableOpacity>
+            </View>
         </View>
     )
 }
 
 const styles = StyleSheet.create({
-    input: {
-        padding:15,
+    searchBar: {
+        padding:10,
         borderWidth:1,
         borderRadius:15,
         borderColor:Colors.GRAY,
-        fontFamily: 'outfit'
+        fontFamily: 'outfit',
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between'
+
     }
 })

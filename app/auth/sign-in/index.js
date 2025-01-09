@@ -1,156 +1,168 @@
-import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { useNavigation, useRouter } from 'expo-router'
-import { Colors } from './../../../constants/Colors'
+import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { useNavigation, useRouter } from 'expo-router';
+import { Colors } from './../../../constants/Colors';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../../configs/FirebaseConfig';
-import { replace } from 'expo-router/build/global-state/routing';
 
 export default function SignIn() {
-    const navigation = useNavigation();
-    const router = useRouter();
+  const navigation = useNavigation();
+  const router = useRouter();
 
-    const [email, setEmail] = useState();
-    const [password, setPassword] = useState();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [hasError, setHasError] = useState({ email: false, password: false });
+  const [hasSubmitted, setHasSubmitted] = useState(false); // Track form submission
 
-    useEffect(() => {
-        navigation.setOptions({
-            headerShown:false
-        })
-    })
+  useEffect(() => {
+    navigation.setOptions({
+      headerShown: false,
+    });
+  });
 
-    const onSignIn = () => {
-      if(!email && !password && !fullname){
-        console.log('Please enter all input field!');
-        // ToastAndroid.show('Please enter all input field!', ToastAndroid.LONG);
-        return;
-      }
+  const onSignIn = () => {
+    setHasSubmitted(true); // Mark that the user has submitted the form
 
-      signInWithEmailAndPassword(auth, email, password)
+    let isValid = true;
+
+    if (!email) {
+      setHasError((prev) => ({ ...prev, email: true }));
+      isValid = false;
+    } else {
+      setHasError((prev) => ({ ...prev, email: false }));
+    }
+
+    if (!password) {
+      setHasError((prev) => ({ ...prev, password: true }));
+      isValid = false;
+    } else {
+      setHasError((prev) => ({ ...prev, password: false }));
+    }
+
+    if (!isValid) {
+      return;
+    }
+
+    signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        // Signed in 
         const user = userCredential.user;
         router.replace('/mytrip');
         console.log(user);
-        // ...
       })
       .catch((error) => {
         const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorCode, errorMessage);
-        if(errorCode == 'auth/invalid-credential'){
-          alert("Invalid credentials");
+        console.log(errorCode);
+        if (errorCode === 'auth/invalid-credential') {
+          alert('Invalid credentials');
         }
       });
-    }
+  };
 
   return (
-    <View
-    style={{
-        padding:25,
-        paddingTop: 50,
-        backgroundColor: Colors.WHITE,
-        height:'100%'
-    }}>
+    <View style={styles.container}>
       <TouchableOpacity onPress={() => router.back()}>
         <Ionicons name="chevron-back" size={24} color="black" />
       </TouchableOpacity>
-      <Text style={{
-        fontFamily:'outfit-bold',
-        fontSize:30,
-        marginTop: 30
-      }}>Let's Sign You In
-      </Text>
-      <Text style={{
-        fontFamily:'outfit',
-        marginTop:20,
-        fontSize:30,
-        color:Colors.GRAY
-      }}>Welcome Back
-      </Text>
-      <Text style={{
-        fontFamily:'outfit',
-        fontSize:30,
-        marginTop:10,
-        color:Colors.GRAY
-      }}>You've been missed
-      </Text>
 
-      <View style={
-        {
-            marginTop: 50
-        }
-      }>
-        <Text>Email</Text>
-        <TextInput 
-        style={styles.input} 
-        placeholder='Enter Email'
-        onChangeText={(value) =>setEmail(value)}>
-        </TextInput>
+      <Text style={styles.title}>Let's Sign You In</Text>
+      <Text style={styles.subtitle}>Welcome Back</Text>
+      <Text style={styles.subtitle}>You've been missed</Text>
+
+      <View style={styles.inputContainer}>
+        <Text style={hasError.email ? styles.errorText : styles.label}>Email</Text>
+        <TextInput
+          style={[styles.input, hasError.email && styles.errorInput]}
+          placeholder="Enter Email"
+          onChangeText={(value) => setEmail(value)}
+        />
+        {hasSubmitted && hasError.email && !email && (
+          <Text style={styles.errorText}>Email is required</Text>
+        )}
       </View>
 
-      <View style={
-        {
-            marginTop: 20
-        }
-      }>
-        <Text>Password</Text>
-        <TextInput 
-        secureTextEntry={true} 
-        style={styles.input} 
-        placeholder='Enter Password'
-        onChangeText={(value) =>setPassword(value)}></TextInput>
+      <View style={styles.inputContainer}>
+        <Text style={hasError.password ? styles.errorText : styles.label}>Password</Text>
+        <TextInput
+          secureTextEntry
+          style={[styles.input, hasError.password && styles.errorInput]}
+          placeholder="Enter Password"
+          onChangeText={(value) => setPassword(value)}
+        />
+        {hasSubmitted && hasError.password && !password && (
+          <Text style={styles.errorText}>Password is required</Text>
+        )}
       </View>
 
-      
-      <TouchableOpacity
-        onPress={onSignIn} 
-        style={
-        {
-            marginTop: 50,
-            padding:15,
-            backgroundColor:Colors.PRIMARAY,
-            borderRadius:15,
-        }
-      }>
-        <Text
-            style={{
-                color:Colors.WHITE,
-                textAlign:'center',
-            }}
-        >Sign In</Text>
+      <TouchableOpacity onPress={onSignIn} style={styles.signInButton}>
+        <Text style={styles.signInButtonText}>Sign In</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity
-            onPress={() => router.replace('auth/sign-up')} 
-            style={
-            {
-                marginTop: 20,
-                padding:20,
-                backgroundColor:Colors.WHITE,
-                borderRadius:15,
-                borderWidth:1
-            }
-      }>
-        <Text
-            onPress={() => router.replace('auth/sign-up')} 
-            style={{
-                color:Colors.PRIMARAY,
-                textAlign:'center',
-            }}
-        >Create Account</Text>
+      <TouchableOpacity onPress={() => router.replace('auth/sign-up')} style={styles.createAccountButton}>
+        <Text style={styles.createAccountText}>Create Account</Text>
       </TouchableOpacity>
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
-    input: {
-        padding:15,
-        borderWidth:1,
-        borderRadius:15,
-        borderColor:Colors.GRAY,
-        fontFamily: 'outfit'
-    }
-})
+  container: {
+    padding: 25,
+    paddingTop: 50,
+    backgroundColor: Colors.WHITE,
+    height: '100%',
+  },
+  title: {
+    fontFamily: 'outfit-bold',
+    fontSize: 30,
+    marginTop: 30,
+  },
+  subtitle: {
+    fontFamily: 'outfit',
+    marginTop: 10,
+    fontSize: 30,
+    color: Colors.GRAY,
+  },
+  inputContainer: {
+    marginTop: 20,
+  },
+  label: {
+    fontFamily: 'outfit',
+  },
+  input: {
+    padding: 15,
+    borderWidth: 1,
+    borderRadius: 15,
+    borderColor: Colors.GRAY,
+    fontFamily: 'outfit',
+  },
+  errorInput: {
+    borderColor: 'red',
+  },
+  errorText: {
+    color: 'red',
+    marginTop: 5,
+    fontSize: 14,
+  },
+  signInButton: {
+    marginTop: 50,
+    padding: 15,
+    backgroundColor: Colors.PRIMARAY,
+    borderRadius: 15,
+  },
+  signInButtonText: {
+    color: Colors.WHITE,
+    textAlign: 'center',
+  },
+  createAccountButton: {
+    marginTop: 20,
+    padding: 20,
+    backgroundColor: Colors.WHITE,
+    borderRadius: 15,
+    borderWidth: 1,
+  },
+  createAccountText: {
+    color: Colors.PRIMARAY,
+    textAlign: 'center',
+  },
+});

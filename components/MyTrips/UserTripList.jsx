@@ -4,29 +4,14 @@ import moment from 'moment';
 import { Colors } from '../../constants/Colors';
 import UserTripCard from './UserTripCard';
 import { useRouter } from 'expo-router';
+import { findUpcomingTrip } from '../../utils/tripUtils';
 
 export default function UserTripList({ userTrips }) {
     const router = useRouter();
 
     const now = new Date();
-    const isCurrentTrip = (trip) => {
-        const startDate = new Date(JSON.parse(trip.tripData).startDate);
-        const endDate = new Date(JSON.parse(trip.tripData).endDate);
-        return now >= startDate && now <= endDate;
-    };
 
-    const sortedTrips = [...userTrips].sort((a, b) => {
-        const dateA = new Date(JSON.parse(a.tripData).startDate);
-        const dateB = new Date(JSON.parse(b.tripData).startDate);
-        return dateA - dateB;
-    });
-
-    const nearestTripIndex = sortedTrips.findIndex((trip) => {
-        const tripDate = new Date(JSON.parse(trip.tripData).startDate);
-        return tripDate >= now || isCurrentTrip(trip);
-    });
-
-    const upcomingTrip = nearestTripIndex !== -1 ? sortedTrips[nearestTripIndex] : null;
+    const upcomingTrip = findUpcomingTrip(userTrips, now);
     const tripLabel = upcomingTrip && isCurrentTrip(upcomingTrip) ? "Ongoing Trip" : "Next Trip";
 
     return (

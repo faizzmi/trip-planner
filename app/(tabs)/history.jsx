@@ -5,7 +5,8 @@ import { useRouter } from 'expo-router';
 import { Colors } from '../../constants/Colors';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { auth, db } from '../../configs/FirebaseConfig';
-import { now } from 'moment';
+import { isHistoryTrip, sortTripsByStartDate } from '../../utils/tripUtils';
+
 
 export default function History() {
     const router = useRouter();
@@ -14,18 +15,7 @@ export default function History() {
     const [loading, setLoading] = useState(false);
     const user = auth.currentUser;
     
-    const isHistoryTrip = (trip) => {
-        const startDate = new Date(JSON.parse(trip.tripData).startDate);
-        const endDate = new Date(JSON.parse(trip.tripData).endDate);
-        return endDate < now;  // Only include trips where the end date is before now
-    };
-
-    const sortedTrips = [...userTrips].sort((a, b) => {
-        const dateA = new Date(JSON.parse(a.tripData).startDate);
-        const dateB = new Date(JSON.parse(b.tripData).startDate);
-        return dateA - dateB;
-    });
-
+    const sortedTrips = sortTripsByStartDate(userTrips);
     const historyTrips = sortedTrips.filter((trip) => isHistoryTrip(trip)).reverse();
 
     useEffect(() => {

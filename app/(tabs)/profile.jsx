@@ -64,76 +64,81 @@ export default function Profile() {
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.title}>My Profile</Text>
-      <View style={styles.profileSection}>
-        <Image source={require('./../../assets/images/profile-picture.jpg')} style={styles.profileImage} />
-        <Text style={styles.name}>{profileData.name || 'Your Name'}</Text>
-      </View>
 
-      <View style={styles.detailsSection}>
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Name</Text>
-          <TextInput
-            style={[styles.input, !isEditing && styles.disableInput]}
-            placeholder="Your Name"
-            value={profileData.name}
-            editable={isEditing}
-            onChangeText={(value) => handleChange('name', value)}
-          />
+      <View style={styles.profileCard}>
+        <View style={styles.profileSection}>
+          <Image source={require('./../../assets/images/profile-picture.jpg')} style={styles.profileImage} />
+          <Text style={styles.name}>{profileData.name || 'Your Name'}</Text>
         </View>
 
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Email</Text>
-          <TextInput
-            style={[styles.input, styles.disableInput]}
-            placeholder="Your Email"
-            value={user?.email || ''}
-            editable={false}
-          />
-        </View>
+        <View style={styles.detailsSection}>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Name</Text>
+            <TextInput
+              style={[styles.input, !isEditing && styles.disableInput]}
+              placeholder="Your Name"
+              value={profileData.name}
+              editable={isEditing}
+              onChangeText={(value) => handleChange('name', value)}
+            />
+          </View>
 
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Phone Number</Text>
-          <TextInput
-            style={[styles.input, !isEditing && styles.disableInput]}
-            placeholder="Your Phone Number"
-            value={profileData.phoneNumber}
-            editable={isEditing}
-            onChangeText={(value) => handleChange('phoneNumber', value)}
-          />
-        </View>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Email</Text>
+            <TextInput
+              style={[styles.input, styles.disableInput]}
+              placeholder="Your Email"
+              value={user?.email || ''}
+              editable={false}
+            />
+          </View>
 
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Nationality</Text>
-          <TextInput
-            style={[styles.input, !isEditing && styles.disableInput]}
-            placeholder="Your Nationality"
-            value={profileData.nationality}
-            editable={isEditing}
-            onChangeText={(value) => handleChange('nationality', value)}
-          />
-        </View>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Phone Number</Text>
+            <TextInput
+              style={[styles.input, !isEditing && styles.disableInput]}
+              placeholder="Your Phone Number"
+              value={profileData.phoneNumber}
+              editable={isEditing}
+              onChangeText={(value) => handleChange('phoneNumber', value)}
+            />
+          </View>
 
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Religion</Text>
-          <TextInput
-            style={[styles.input, !isEditing && styles.disableInput]}
-            placeholder="Your Religion"
-            value={profileData.religion}
-            editable={isEditing}
-            onChangeText={(value) => handleChange('religion', value)}
-          />
-        </View>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Nationality</Text>
+            <TextInput
+              style={[styles.input, !isEditing && styles.disableInput]}
+              placeholder="Your Nationality"
+              value={profileData.nationality}
+              editable={isEditing}
+              onChangeText={(value) => handleChange('nationality', value)}
+            />
+          </View>
 
-        {isEditing && (
-          <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-            <Text style={styles.saveButtonText}>Save</Text>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Religion</Text>
+            <TextInput
+              style={[styles.input, !isEditing && styles.disableInput]}
+              placeholder="Your Religion"
+              value={profileData.religion}
+              editable={isEditing}
+              onChangeText={(value) => handleChange('religion', value)}
+            />
+          </View>
+
+          {isEditing && (
+            <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+              <Text style={styles.saveButtonText}>Save</Text>
+            </TouchableOpacity>
+          )}
+
+          <TouchableOpacity style={isEditing ? styles.editButton : styles.saveButton} onPress={toggleEdit}>
+            <Text style={isEditing ? styles.editButtonText : styles.saveButtonText}>{isEditing ? 'Cancel' : 'Edit Profile'}</Text>
           </TouchableOpacity>
-        )}
-      </View>
+          
+        </View>
 
-      <TouchableOpacity style={styles.editButton} onPress={toggleEdit}>
-        <Text style={styles.editButtonText}>{isEditing ? 'Cancel' : 'Edit Profile'}</Text>
-      </TouchableOpacity>
+      </View>
 
       <ModalMessage
         visible={modalVisible}
@@ -149,7 +154,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 25,
     paddingTop: 55,
-    backgroundColor: Colors.WHITE,
+    backgroundColor: Colors.L_WHITE,
     height: '100%',
   },
   title: {
@@ -165,6 +170,7 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
+    marginTop: 60
   },
   name: {
     marginTop: 10,
@@ -211,11 +217,19 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: Colors.DARK_GRAY
+    borderColor: Colors.DARK_GRAY,
+    marginTop: 20,
   },
   editButtonText: {
     color: Colors.PRIMARAY,
     fontFamily: 'outfit-bold',
     fontSize: 16,
   },
+  profileCard: {
+    backgroundColor: Colors.WHITE,
+    borderRadius: 12,
+    padding: 20,
+    elevation: 10,
+    boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)',
+  }
 });

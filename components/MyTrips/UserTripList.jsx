@@ -4,7 +4,7 @@ import moment from 'moment';
 import { Colors } from '../../constants/Colors';
 import UserTripCard from './UserTripCard';
 import { useRouter } from 'expo-router';
-import { findUpcomingTrip } from '../../utils/tripUtils';
+import { findUpcomingTrip, sortTripsByStartDate } from '../../utils/tripUtils';
 
 export default function UserTripList({ userTrips }) {
     const router = useRouter();
@@ -12,7 +12,9 @@ export default function UserTripList({ userTrips }) {
     const now = new Date();
 
     const upcomingTrip = findUpcomingTrip(userTrips, now);
-    const tripLabel = upcomingTrip && isCurrentTrip(upcomingTrip) ? "Ongoing Trip" : "Next Trip";
+    const sortedTrips = sortTripsByStartDate(userTrips);
+    const tripLabel = upcomingTrip && (now >= new Date(JSON.parse(upcomingTrip.tripData).startDate) && now <= new Date(JSON.parse(upcomingTrip.tripData).endDate))
+        ? "Ongoing Trip" : "Next Trip";
 
     return (
         <View style={{ marginTop: 10 }}>

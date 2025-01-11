@@ -5,6 +5,7 @@ import { Colors } from '../../../constants/Colors';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../../configs/FirebaseConfig';
+import NotificationMessage from '../../../components/NotificationMessage';
 
 export default function SignUp() {
   const navigation = useNavigation();
@@ -13,6 +14,8 @@ export default function SignUp() {
   const [fullname, setFullName] = useState();
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
+  const [errorMessage, setErrorMessage] = useState('');
+  const [notiModal, setNotiModal] = useState(false);
 
   useEffect(() => {
     navigation.setOptions({
@@ -23,20 +26,16 @@ export default function SignUp() {
   const onCreateAccount = () => {
 
     if(!email && !password && !fullname){
-      console.log('Please enter all input field!');
-      // ToastAndroid.show('Please enter all input field!', ToastAndroid.LONG);
+      setErrorMessage('Please enter all input field!');
+      setNotiModal(true)
       return;
     }
-
-    console.log(auth, email, password);
 
     createUserWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
       // Signed up 
       const user = userCredential.user;
       router.replace('/mytrip');
-      
-      console.log(user)
       // ...
     })
     .catch((error) => {
@@ -146,6 +145,10 @@ export default function SignUp() {
             }}
         >Alradey Have An Account?</Text>
       </TouchableOpacity>
+      
+      {errorMessage && (
+          <NotificationMessage visible={notiModal} id={1} message={errorMessage} onClose={() => setNotiModal(false)}/>
+      )}
       
     </View>
   )

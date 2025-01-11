@@ -72,19 +72,18 @@ export default function SearchPlace() {
                 </View>
             </View>
 
-            { loading ? 
-                (<ActivityIndicator style={{marginTop: 20}} size="large" color={Colors.PRIMARAY} />)
-                : destination === null ? 
-                    ( <Text style={styles.noTripsText}>No such a place called {search}.</Text> ) :
-                    (card && (
-                        <View style={styles.resultContainer}>
-                            <PlaceCard destination={destination}/>
-                            <TouchableOpacity onPress={valContinue} style={styles.continueButton}>
-                                <Text style={styles.continueButtonText}>Continue</Text>
-                            </TouchableOpacity>
-                        </View>
-                    ))
-            }
+            {loading ? (
+                <ActivityIndicator style={{ marginTop: 20 }} size="large" color={Colors.PRIMARAY} />
+            ) : destination === null ? (
+                <Text style={styles.noTripsText}>No such place called {search}.</Text>
+            ) : card && (
+                <View style={styles.resultContainer}>
+                    <PlaceCard destination={destination} />
+                    <TouchableOpacity onPress={valContinue} style={styles.continueButton}>
+                        <Text style={styles.continueButtonText}>Continue</Text>
+                    </TouchableOpacity>
+                </View>
+            )}
         </View>
     );
 }

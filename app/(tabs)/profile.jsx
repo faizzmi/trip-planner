@@ -6,11 +6,15 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { Colors } from '../../constants/Colors';
 import { getAuth, signOut } from 'firebase/auth';
 import ModalMessage from '../../components/ModalMessage';
+import NotificationMessage from '../../components/NotificationMessage';
 
 export default function Profile() {
   const user = auth.currentUser;
   const navigation = useNavigation();
   const router = useRouter();
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [notiModal, setNotiModal] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({
@@ -41,7 +45,8 @@ export default function Profile() {
           router.replace('auth/sign-in');
         })
         .catch((error) => {
-          console.error('Logout error: ', error);
+          setNotiModal(true);
+          setErrorMessage(error)
         });
     } else {
       setModalVisible(false);
@@ -53,8 +58,9 @@ export default function Profile() {
   };
 
   const handleSave = () => {
-    console.log('Profile saved:', profileData);
     setIsEditing(false);
+    setNotiModal(true);
+    setSuccessMessage('Profile saved')
   };
 
   const handleChange = (key, value) => {
@@ -146,6 +152,15 @@ export default function Profile() {
         onClose={() => setModalVisible(false)}
         onConfirm={handleLogOut}
       />
+      {(errorMessage || successMessage) && (
+        <NotificationMessage
+            visible={notiModal}
+            id={errorMessage ? 1 : 2} 
+            message={errorMessage || successMessage}
+            onClose={() => setNotiModal(false)}
+        />
+      )}
+
     </ScrollView>
   );
 }

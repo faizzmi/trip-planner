@@ -7,16 +7,17 @@ import { AI_PROMPT } from '../../constants/Options';
 import { chatSession } from '../../configs/AiModel';
 import {db, auth} from './../../configs/FirebaseConfig';
 import { doc, setDoc } from 'firebase/firestore';
+import NotificationMessage from '../../components/NotificationMessage';
 
 export default function GenerateTrip() {
   const navigation = useNavigation();
-  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [notiModal, setNotiModal] = useState(false);
   const { tripData, setTripData } = useContext(CreateTripContext);
   const router = useRouter();
 
   const GenerateAiTrip = async() => {
-        setLoading(true);
-
         const FINAL_PROMPT = AI_PROMPT
         .replace('{location}', tripData?.locationInfo)
         .replace('{budget}',tripData?.budget)
@@ -25,11 +26,8 @@ export default function GenerateTrip() {
         .replace('{preferences}', tripData?.preference)
         .replace('{muslim}', tripData?.muslimFriendly ? 'Muslim' : 'Non Muslim');
 
-        console.log(FINAL_PROMPT);
         const result = await chatSession.sendMessage(FINAL_PROMPT);
-        console.log(result.response.text());
 
-        setLoading(false);
         const docId = (Date.now()).toString();
         const user = auth.currentUser;
         const tripRes = JSON.parse(result.response.text());
@@ -40,6 +38,15 @@ export default function GenerateTrip() {
             tripData:JSON.stringify(tripData),
             docId: docId
         })
+
+        console.log(result_)
+        if(result_){
+          setNotiModal(true);
+          setSuccessMessage('Trip generate')
+        } else {
+          setNotiModal(true);
+          setErrorMessage('Fail to generate trip');
+        }
         
         router.push({
             pathname: '/trip-details',
@@ -91,7 +98,6 @@ export default function GenerateTrip() {
           We are working to generate your dream trip
         </Text>
 
-        {/* Replacing the GIF with a spinning loader */}
         <ActivityIndicator
           size="large"
           color= {Colors.WHITE}
@@ -113,6 +119,16 @@ export default function GenerateTrip() {
           Do not Go Back
         </Text>
       </View>
+
+      
+      {(errorMessage || successMessage) && (
+        <NotificationMessage
+            visible={notiModal}
+            id={errorMessage ? 1 : 2} 
+            message={errorMessage || successMessage}
+            onClose={() => setNotiModal(false)}
+        />
+      )}
     </View>
   );
 }

@@ -12,18 +12,21 @@ import { deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../../configs/FirebaseConfig';
 import ModalMessage from '../../components/ModalMessage';
 import { getPlacePhoto } from '../../utils/googlePlaceUtils';
+import NotificationMessage from '../../components/NotificationMessage';
 
 export default function TripDetails() {
   const navigation = useNavigation();
   const router = useRouter();
   const { tripData } = useLocalSearchParams(); 
   const [tripDetails, setTripDetails] = useState(null);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [notiModal, setNotiModal] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [photo, setPhoto] = useState(null); 
 
   useEffect(() => {
-    // Ensure tripData is parsed and valid
     if (tripData) {
       try {
         const parsedData = JSON.parse(tripData);
@@ -35,7 +38,6 @@ export default function TripDetails() {
   }, [tripData]);
 
   useEffect(() => {
-    // Fetch photo only when destination is available
     if (tripDetails?.tripPlan?.tripDetails?.destination) {
       const placeName = tripDetails.tripPlan.tripDetails.destination;
       const fetchPhoto = async () => {
@@ -71,7 +73,6 @@ export default function TripDetails() {
 
   const handleDelete = (confirmed) => {
     if (confirmed) {
-      console.log("Trip deleted"); 
       deleteTrip();
       router.replace('/mytrip');
     }
@@ -86,9 +87,11 @@ export default function TripDetails() {
 
       const tripDocRef = doc(db, 'UserTrips', tripDetails.docId); 
       await deleteDoc(tripDocRef);
-      console.log('Trip successfully deleted');
+      setSuccessMessage(`Trip to ${tripPlan?.tripDetails?.destination} successfully deleted`);
+      setNotiModal(true);
     } catch (error) {
-      console.error('Error deleting trip:', error);
+      setErrorMessage('Error deleting trip');
+      setNotiModal(true);
     } finally {
       setLoading(false); 
     }
@@ -161,6 +164,15 @@ export default function TripDetails() {
         onClose={() => setModalVisible(false)}
         onConfirm={handleDelete}
       />
+      {(errorMessage || successMessage) && (
+        <NotificationMessage
+            visible={notiModal}
+            id={errorMessage ? 1 : 2}
+            message={errorMessage || successMessage}
+            onClose={() => setNotiModal(false)}
+        />
+      )}
+
     </ScrollView>
   );
 }

@@ -55,11 +55,9 @@ export default function SignIn() {
       .then((userCredential) => {
         const user = userCredential.user;
         router.replace('/mytrip');
-        console.log(user);
       })
       .catch((error) => {
         const errorCode = error.code;
-        console.log(errorCode);
         if (errorCode === 'auth/invalid-credential') {
           setErrorMessage('Invalid credentials');
           setNotiModal(true);

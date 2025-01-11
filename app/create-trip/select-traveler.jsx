@@ -6,11 +6,14 @@ import { FlatList } from 'react-native';
 import { SelectTravelerList } from './../../constants/Options'
 import OptionCard from '../../components/CreateTrip/OptionCard';
 import { CreateTripContext } from '../../context/CreateTripContext';
+import NotificationMessage from '../../components/NotificationMessage';
 
 export default function SelectTraveler() {
 
   const navigation = useNavigation();
-  const [selectedTraveler, setSelectedTraveler] = useState();
+  const [selectedTraveler, setSelectedTraveler] = useState();  
+  const [errorMessage, setErrorMessage] = useState('');
+  const [notiModal, setNotiModal] = useState();
   const {tripData, setTripData} = useContext(CreateTripContext);
   const router = useRouter();
   
@@ -18,7 +21,8 @@ export default function SelectTraveler() {
 
   const valContinue = () => {
       if(!selectedTraveler){
-          console.error('Please choose who to travel');
+          setErrorMessage('Please choose who to travel');
+          setNotiModal(true)
           return;
       }
       router.push('/create-trip/select-dates');
@@ -91,6 +95,10 @@ export default function SelectTraveler() {
             fontSize: 20
           }}
         >Countinue</Text>
+        
+      {errorMessage && (
+          <NotificationMessage visible={notiModal} id={1} message={errorMessage} onClose={() => setNotiModal(false)}/>
+      )}
     </TouchableOpacity>
 
     </View>

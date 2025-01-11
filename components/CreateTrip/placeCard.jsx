@@ -16,6 +16,12 @@ export default function PlaceCard({destination}) {
         fetchPhoto();
     }, [destination?.placeName]);
 
+    const truncateText = (text, wordLimit) => {
+        if (!text) return '';
+        const words = text.split(' ');
+        return words.length > wordLimit ? words.slice(0, wordLimit).join(' ') + '...' : text;
+    };
+
   return (
     <View style={{backgroundColor: Colors.WHITE}}>
         <Image source={photoUrl? {uri: photoUrl} : require('./../../assets/images/card-trip.jpg')}
@@ -36,7 +42,7 @@ export default function PlaceCard({destination}) {
                 color: Colors.GRAY,
                 textAlign: 'justify'
             }}>
-                {destination?.desc}.
+                {truncateText(destination?.desc, 40)}.
             </Text>
             <View>
                 <Text style={{

@@ -103,6 +103,7 @@ export default function TripDetails() {
 
   const { tripPlan, tripData: rawTripData } = tripDetails;
   const parsedTripData = JSON.parse(rawTripData);
+  console.log(tripPlan?.flightDetails)
 
   return (
     <ScrollView>

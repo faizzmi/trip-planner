@@ -73,6 +73,7 @@ export default function Profile() {
           religion: data.religion || '',
           profilePicture: data.profilePicture || ''
         }));
+
       }
     } catch (error) {
       console.error('Error fetching profile data:', error);
@@ -134,9 +135,6 @@ export default function Profile() {
       await setDoc(userDocRef, { ...tempProfileData }, { merge: true });
 
       setProfileData({ ...tempProfileData });
-      setTripData((prevData) => ({
-          muslimFriendly: profileData.religion,
-      }));
 
       setIsEditing(false);
       setNotiModal(true);

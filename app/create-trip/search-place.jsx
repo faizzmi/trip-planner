@@ -13,6 +13,7 @@ export default function SearchPlace() {
     const navigation = useNavigation();
     const router = useRouter();
     const [search, setSearch] = useState('');
+    const [input, setInput] = useState('');
     const [card, setCard] = useState(false);
     const [loading, setLoading] = useState(false);
     const [destination, setDestination] = useState();
@@ -30,13 +31,21 @@ export default function SearchPlace() {
 
     const searchPlace = async () => {
         setLoading(true);
+        setSearch(input);
 
         try {
             const FINAL_PROMPT = SEARCH_PROMPT.replace('{search}', search);
             const result = await searchTravelDestination.sendMessage(FINAL_PROMPT);
 
+            if(JSON.parse(result.response.text()).placeName == null) {
+                setLoading(false);
+                setDestination(null);
+                return;
+            }
+
             setLoading(false);
             setDestination(JSON.parse(result.response.text()));
+            console.log(JSON.parse(result.response.text()).placeName);
             setCard(true);
         } catch (error) {
             setLoading(false);
@@ -65,8 +74,8 @@ export default function SearchPlace() {
                     <TextInput
                         style={styles.input}
                         placeholder="Search Place"
-                        value={search}
-                        onChangeText={(value) => setSearch(value)}
+                        value={input}
+                        onChangeText={(value) => setInput(value)}
                     />
                     <Ionicons onPress={searchPlace} style={styles.icon} name="search" size={24} color="black" />
                 </View>
@@ -75,7 +84,7 @@ export default function SearchPlace() {
             {loading ? (
                 <ActivityIndicator style={{ marginTop: 20 }} size="large" color={Colors.PRIMARAY} />
             ) : destination === null ? (
-                <Text style={styles.noTripsText}>No such place called {search}.</Text>
+                <Text style={styles.noTripsText}>No such a place called {search}.</Text>
             ) : card && (
                 <View style={styles.resultContainer}>
                     <PlaceCard destination={destination} />
@@ -114,7 +123,7 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     continueButton: {
-        marginTop: 20,
+        marginTop: 60,
         padding: 15,
         backgroundColor: Colors.PRIMARAY,
         borderRadius: 15,

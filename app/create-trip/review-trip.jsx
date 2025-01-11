@@ -1,14 +1,18 @@
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator } from 'react-native'
 import React, { useContext, useEffect } from 'react'
 import { useNavigation, useRouter } from 'expo-router'
 import { Colors } from '../../constants/Colors';
 import moment from 'moment';
 import { CreateTripContext } from '../../context/CreateTripContext';
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import { db } from './../../configs/FirebaseConfig';
+import { auth } from './../../configs/FirebaseConfig';
 
 export default function ReviewTrip() {
 
     const navigation = useNavigation();
     const router = useRouter();
+    const user = auth.currentUser;
     const {tripData, setTripData} = useContext(CreateTripContext);
 
     useEffect(() => {
@@ -17,7 +21,27 @@ export default function ReviewTrip() {
             headerTransparent: true,
             headerTitle: 'Review Trip'
         })
-    })
+        getProfileData();
+    },[]);
+
+    const getProfileData = async () => {
+        try {
+          const q = query(collection(db, 'users'), where('email', '==', user?.email));
+          const querySnapshot = await getDocs(q);
+          console.log(querySnapshot.docs[0].data())
+    
+          if (!querySnapshot.empty) {
+            const data = querySnapshot.docs[0].data();
+            setTripData((prev) => ({
+              ...prev,
+              muslimFriendly: data.religion,
+            }));
+    
+          }
+        } catch (error) {
+          console.log('Error fetching profile data:', error);
+        }
+      };
 
   return (
     <View style={{
@@ -159,11 +183,11 @@ export default function ReviewTrip() {
                         fontFamily: 'outfit',
                         fontSize: 20,
                         color: Colors.GRAY
-                    }}>Muslim Friendly</Text>
+                    }}>Religion</Text>
                     <Text style={{
                         fontFamily: 'outfit-medium',
                         fontSize: 20,
-                    }}>{tripData?.muslimFriendly ? 'Muslim Friendly' : 'Not Muslim Friendly'}
+                    }}>{tripData?.muslimFriendly}
 
                     </Text>
                 </View>
@@ -171,22 +195,31 @@ export default function ReviewTrip() {
         </View>
 
         <TouchableOpacity
-            onPress={() => router.replace('/create-trip/generate-trip')}
+            onPress={tripData?.muslimFriendly ? () => router.replace('/create-trip/generate-trip') : null}
             style={{
                 marginTop: 50,
-                padding:15,
-                backgroundColor:Colors.PRIMARAY,
-                borderRadius:15,
-        }}>
+                padding: 15,
+                backgroundColor: tripData?.muslimFriendly ? Colors.PRIMARAY : Colors.LIGHT_GRAY,
+                borderRadius: 15,
+                opacity: tripData?.muslimFriendly ? 1 : 0.5,
+            }}
+            disabled={!tripData?.muslimFriendly}
+        >
             <Text
                 style={{
-                    color:Colors.WHITE,
-                    textAlign:'center',
+                    color: Colors.WHITE,
+                    textAlign: 'center',
                     fontFamily: 'outfit-medium',
-                    fontSize: 20
+                    fontSize: 20,
                 }}
-            >Plan My Trip</Text>
+            >
+                Plan My Trip
+            </Text>
+            {tripData?.muslimFriendly && (
+                <ActivityIndicator style={{ marginTop: 20 }} size="large" color={Colors.WHITE} />
+            )}
         </TouchableOpacity>
+
     </View>
   )
 }

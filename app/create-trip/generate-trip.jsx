@@ -18,14 +18,15 @@ export default function GenerateTrip() {
   const router = useRouter();
 
   const GenerateAiTrip = async() => {
-        const FINAL_PROMPT = AI_PROMPT
+      const FINAL_PROMPT = AI_PROMPT
         .replace('{location}', tripData?.locationInfo)
         .replace('{budget}',tripData?.budget)
         .replace('{travel_companions}', tripData?.traveler?.title)
         .replace('{number_of_days}', tripData?.noOfDays)
         .replace('{preferences}', tripData?.preference)
-        .replace('{muslim}', tripData?.muslimFriendly ? 'Muslim' : 'Non Muslim');
+        .replace('{muslim}', tripData?.muslimFriendly);
 
+        console.log(FINAL_PROMPT);
         const result = await chatSession.sendMessage(FINAL_PROMPT);
 
         const docId = (Date.now()).toString();
@@ -36,11 +37,12 @@ export default function GenerateTrip() {
             userEmail: user.email,
             tripPlan: tripRes,
             tripData:JSON.stringify(tripData),
-            docId: docId
+            docId: docId 
         })
 
-        console.log(result_)
-        if(result_){
+        console.log("loook at this tr",tripRes);
+        console.log("loook at this td",tripData);
+        if(tripRes){
           setNotiModal(true);
           setSuccessMessage('Trip generate')
         } else {
@@ -48,10 +50,7 @@ export default function GenerateTrip() {
           setErrorMessage('Fail to generate trip');
         }
         
-        router.push({
-            pathname: '/trip-details',
-            params: { tripData: JSON.stringify(result_) }
-        })
+        router.push('/my-trips');
        
   };
 

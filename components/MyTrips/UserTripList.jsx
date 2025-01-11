@@ -1,7 +1,8 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import moment from 'moment';
-import { Colors } from '../../constants/Colors';
+import { Colors } from '../../constants/Colors'
+import { getPlacePhoto } from '../../utils/googlePlaceUtils'
 import UserTripCard from './UserTripCard';
 import { useRouter } from 'expo-router';
 import { findUpcomingTrip, sortTripsByStartDate } from '../../utils/tripUtils';
@@ -9,12 +10,28 @@ import { findUpcomingTrip, sortTripsByStartDate } from '../../utils/tripUtils';
 export default function UserTripList({ userTrips }) {
     const router = useRouter();
 
+    const [upcomingTripUrl, setUpcomingTripUrl] = useState(); 
+
     const now = new Date();
 
     const upcomingTrip = findUpcomingTrip(userTrips, now);
     const sortedTrips = sortTripsByStartDate(userTrips);
     const tripLabel = upcomingTrip && (now >= new Date(JSON.parse(upcomingTrip.tripData).startDate) && now <= new Date(JSON.parse(upcomingTrip.tripData).endDate))
         ? "Ongoing Trip" : "Next Trip";
+
+
+    useEffect(() => {
+        const placeName = JSON.parse(upcomingTrip.tripData)?.locationInfo;
+        const fetchPhoto = async () => {
+            if (placeName) {
+                const url = await getPlacePhoto(placeName);
+                setUpcomingTripUrl(url); 
+            }
+        };
+        if (upcomingTrip) {
+            fetchPhoto();
+        }
+    }, [upcomingTrip]); 
 
     return (
         <View style={{ marginTop: 10 }}>
@@ -24,8 +41,9 @@ export default function UserTripList({ userTrips }) {
                         fontFamily: 'outfit-bold',
                         fontSize: 20
                     }}>{tripLabel}</Text>
+
                     <Image
-                        source={require('./../../assets/images/card-trip.jpg')}
+                        source={upcomingTripUrl ? { uri: upcomingTripUrl } : require('./../../assets/images/card-trip.jpg')} 
                         style={{
                             width: '100%',
                             height: 230,
@@ -34,6 +52,7 @@ export default function UserTripList({ userTrips }) {
                             marginTop: 20
                         }}
                     />
+
                     <View style={{ marginTop: 10 }}>
                         <Text style={{
                             fontFamily: 'outfit-medium',
@@ -51,8 +70,9 @@ export default function UserTripList({ userTrips }) {
                                 color: Colors.GRAY
                             }}>
                                 {moment(JSON.parse(upcomingTrip.tripData)?.startDate).format('DD MMM YYYY')}
-                                 - 
-                                {moment(JSON.parse(upcomingTrip.tripData)?.endDate).format('DD MMM YYYY')}</Text>
+                                -
+                                {moment(JSON.parse(upcomingTrip.tripData)?.endDate).format('DD MMM YYYY')}
+                            </Text>
                             <Text style={{
                                 fontFamily: 'outfit',
                                 fontSize: 17,
@@ -91,7 +111,7 @@ export default function UserTripList({ userTrips }) {
                 <View style={{ flex: 1, height: 1, backgroundColor: Colors.GRAY }} />
             </View>
 
-            { sortedTrips.slice(1).length > 0 ?
+            {sortedTrips.slice(1).length > 0 ?
                 (sortedTrips.slice(1).map((trip, index) => (
                     <TouchableOpacity key={index}
                         onPress={() => router.push({

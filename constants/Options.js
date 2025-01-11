@@ -115,106 +115,57 @@ export const SelectTravelPreference = [
 
 export const DiscoverPlaces = [
   {
-    "placeName": "LaplandUK Manchester",
-    "id": "1",
-    "desc": "A festive adventure for families, offering elf passports, toy factory visits, baking sessions, and meetings with Father Christmas.",
-    "highlight": "Experience the magic of Christmas with interactive activities and storytelling.",
-    "ticket": "Tickets go on sale in March; pricing details to be announced.",
-    "location": "Capesthorne Hall, Manchester, UK",
-    "openingDate": "Winter 2025",
-    "website": "https://www.laplanduk.co.uk/"
+    "placeName": "Super Nintendo World",
+    "id": "11",
+    "desc": "A theme park dedicated to the world of Nintendo, featuring iconic characters and attractions from the Mario franchise, including a real-life Mario Kart ride and interactive games.",
+    "highlight": "Experience the magic of Nintendo's beloved characters and games come to life.",
+    "ticket": "Ticket prices vary depending on the season; check the official website for details.",
+    "location": "Universal Studios, Osaka, Japan",
+    "openingDate": "March 2021",
+    "website": "https://www.universalstudios.jp/en/"
   },
   {
-    "placeName": "Hossoland",
-    "id": "2",
-    "desc": "An expansive theme park featuring four themed lands and over 50 attractions, including the high-speed GhostRider coaster.",
-    "highlight": "Thrilling rides and immersive themed areas for all ages.",
-    "ticket": "Pricing details to be announced; expected to offer day passes and season tickets.",
-    "location": "Baltic Coast, Poland",
-    "openingDate": "June 2025",
-    "website": "https://www.hossoland.pl/"
+    "placeName": "EPCOT: Space 220 Restaurant",
+    "id": "12",
+    "desc": "A unique dining experience offering a 'space station' restaurant that provides a virtual view of Earth from space.",
+    "highlight": "Enjoy futuristic dining in a space-themed environment.",
+    "ticket": "Reservation required; varies by dining package.",
+    "location": "Walt Disney World Resort, Orlando, Florida, USA",
+    "openingDate": "September 2021",
+    "website": "https://www.wdwinfo.com/space-220.htm"
   },
   {
-    "placeName": "Bommelwereld",
-    "id": "3",
-    "desc": "An indoor amusement park based on the comic character Olivier B. Bommel, featuring attractions like a family coaster and mini flume ride.",
-    "highlight": "Family-friendly rides set within a medieval castle facade.",
-    "ticket": "Details to be announced; likely to offer family packages.",
-    "location": "Netherlands",
-    "openingDate": "2025",
-    "website": "https://www.bommelwereld.nl/"
+    "placeName": "The Museum of the Future",
+    "id": "13",
+    "desc": "An innovative museum featuring immersive experiences that explore futuristic technology, space travel, and AI.",
+    "highlight": "Engage with cutting-edge technologies and explore the future of humanity.",
+    "ticket": "Entry fee varies; discounts available for students and groups.",
+    "location": "Dubai, UAE",
+    "openingDate": "February 2022",
+    "website": "https://www.museumofthefuture.ae/"
   },
   {
-    "placeName": "Ubisoft Entertainment Center",
-    "id": "4",
-    "desc": "An interactive center featuring attractions based on Ubisoft’s franchises like Rayman and Rabbids, with dining and retail options.",
-    "highlight": "Engage with your favorite video game characters in immersive experiences.",
-    "ticket": "Information pending; expected to offer various entry options.",
-    "location": "Near Montpellier, France",
-    "openingDate": "2025",
-    "website": "https://www.ubisoft.com/en-us/entertainment-center"
+    "placeName": "The Louvre Abu Dhabi",
+    "id": "14",
+    "desc": "A universal museum with stunning architecture, featuring art collections from across the globe, including works from ancient civilizations and modern artists.",
+    "highlight": "Marvel at world-class art and culture in a striking futuristic design.",
+    "ticket": "Entry fee applies; discounts for students and residents.",
+    "location": "Abu Dhabi, UAE",
+    "openingDate": "November 2017",
+    "website": "https://www.louvreabudhabi.ae/"
   },
   {
-    "placeName": "Qiddiya",
-    "id": "5",
-    "desc": "A planned entertainment and tourism megaproject featuring theme parks, including Six Flags Qiddiya, and the world's fastest roller coaster.",
-    "highlight": "Experience cutting-edge attractions in a futuristic entertainment city.",
-    "ticket": "Details to be announced; expected to offer various packages.",
-    "location": "Riyadh Province, Saudi Arabia",
-    "openingDate": "2025 (proposed)",
-    "website": "https://www.qiddiya.com/"
-  },
-  {
-    "placeName": "Gardens by the Bay Expansion",
-    "id": "6",
-    "desc": "Upgrades and expansion works, including a woodland-themed playground and a new experiential attraction at Kingfisher Wetlands.",
-    "highlight": "Explore enhanced gardens with new interactive and educational experiences.",
-    "ticket": "Entry fees vary; some attractions may have separate charges.",
-    "location": "Singapore",
-    "openingDate": "Playground in 2025; other attractions by 2027",
-    "website": "https://www.gardensbythebay.com.sg/"
-  },
-  {
-    "placeName": "Las Vegas Sphere",
-    "id": "7",
-    "desc": "A state-of-the-art entertainment venue featuring immersive experiences with cutting-edge technology.",
-    "highlight": "Attend concerts and events in a revolutionary spherical venue.",
-    "ticket": "Varies by event; tickets available through official channels.",
-    "location": "Las Vegas, Nevada, USA",
-    "openingDate": "Opened in 2023; top attraction for 2025",
-    "website": "https://www.msg.com/sphere"
-  },
-  {
-    "placeName": "Bay East Garden",
-    "id": "8",
-    "desc": "An extension of Gardens by the Bay, featuring themed zones inspired by the past and future, and housing the Founders' Memorial.",
-    "highlight": "Stroll through diverse landscapes reflecting Singapore's heritage and future aspirations.",
-    "ticket": "Free entry; some attractions may have separate fees.",
-    "location": "Singapore",
-    "openingDate": "2027",
-    "website": "https://www.gardensbythebay.com.sg/"
-  },
-  {
-    "placeName": "Six Flags Qiddiya",
-    "id": "9",
-    "desc": "The largest Six Flags theme park in the Middle East, featuring record-breaking rides like the Falcon's Flight roller coaster.",
-    "highlight": "Experience the world's fastest, tallest, and longest roller coaster.",
-    "ticket": "Details to be announced; expected to offer day passes and season tickets.",
-    "location": "Riyadh Province, Saudi Arabia",
-    "openingDate": "2025 (proposed)",
-    "website": "https://www.qiddiya.com/en/project/six-flags-qiddiya"
-  },
-  {
-    "placeName": "Dragon Ball Theme Park at Qiddiya",
-    "id": "10",
-    "desc": "A theme park dedicated to the Dragon Ball franchise, featuring over 30 attractions, including a 70-meter-high Shenron statue with a roller coaster.",
-    "highlight": "Immerse yourself in the world of Dragon Ball with unique rides and experiences.",
-    "ticket": "Information pending; expected to offer various entry options.",
-    "location": "Riyadh Province, Saudi Arabia",
-    "openingDate": "2025 (proposed)",
-    "website": "https://www.qiddiya.com/en/project/dragon-ball-theme-park"
+    "placeName": "The Edge NYC",
+    "id": "15",
+    "desc": "The highest outdoor sky deck in the Western Hemisphere, offering panoramic views of New York City from a glass-floored observation deck.",
+    "highlight": "Experience breathtaking views of the city skyline and Central Park from the 100th floor.",
+    "ticket": "Ticket prices vary; discounts available for groups and residents.",
+    "location": "Hudson Yards, New York City, USA",
+    "openingDate": "March 2020",
+    "website": "https://www.edgenyc.com/"
   }
 ]
+
 
 // export const AI_PROMPT = "Create a detailed travel plan in JSON format from Pahang, Malaysia to {location} as a {muslim}, for {budget} budget, with {travel_companions}, within {number_of_days} days, and {preferences} travel (e.g., adventure, relaxation, cultural experiences, or food). The JSON output should include a daily itinerary with activities, places to visit, and approximate costs under the `itinerary` key; suggestions for accommodations with price (in Ringgit Malaysia) ranges under `accommodations`; transportation options to and within the location with costs under `transportation`; meal recommendations and local dishes to try with estimated costs under `meals`; a `budget_summary` key with a breakdown of expenses (e.g., accommodations, meals, activities, and transportation) to ensure the trip stays within budget; and a `tips` key with practical advice for saving money and enhancing the travel experience. Ensure the JSON is well-structured, realistic, and actionable based on the given inputs." ; 
 export const AI_PROMPT = 'Generate {preferences} Travel Plan from Pahang, Malaysia to {location} as a {muslim}, for {number_of_days} Days for {travel_companions} with a {budget} budget with a Flight details, Flight Price with Booking url, Hotels options list with HotelName, Hotel address, Price, hotel image url, geo coordinates, rating, descriptions and Places to visit nearby with placeName, Place Details, Place Image Url, Geo Coordinates, ticket Pricing, Time travel each of the location for {number_of_days} days with each day plan with best time to visit in JSON format'; 

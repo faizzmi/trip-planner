@@ -7,6 +7,7 @@ import PlaceCard from '../../components/CreateTrip/placeCard';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { SEARCH_PROMPT } from '../../constants/Options';
 import { searchTravelDestination } from '../../configs/AiModel';
+import NotificationMessage from '../../components/NotificationMessage';
 
 export default function SearchPlace() {
     const navigation = useNavigation();
@@ -14,7 +15,9 @@ export default function SearchPlace() {
     const [search, setSearch] = useState('');
     const [card, setCard] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [ destination, setDestination] = useState();
+    const [destination, setDestination] = useState();
+    const [errorMessage, setErrorMessage] = useState('');
+    const [modalVisible, setModalVisible] = useState(false);
     const { tripData, setTripData } = useContext(CreateTripContext);
 
     useEffect(() => {
@@ -27,16 +30,22 @@ export default function SearchPlace() {
 
     const searchPlace = async () => {
         setLoading(true);
-        
-        const FINAL_PROMPT = SEARCH_PROMPT.replace('{search}', search);
-        const result = await searchTravelDestination.sendMessage(FINAL_PROMPT);
-        setLoading(false);
 
-        setDestination(JSON.parse(result.response.text()))
-        setCard(true);
-    }
+        try {
+            const FINAL_PROMPT = SEARCH_PROMPT.replace('{search}', search);
+            const result = await searchTravelDestination.sendMessage(FINAL_PROMPT);
 
-    const valContinue = () => {
+            setLoading(false);
+            setDestination(JSON.parse(result.response.text()));
+            setCard(true);
+        } catch (error) {
+            setLoading(false);
+            setModalVisible(true)
+            setErrorMessage("The service is currently unavailable. Please try again later.");
+        }
+    };
+
+    const valContinue = () => { 
         setTripData((prevData) => ({
             ...prevData,
             locationInfo: destination.placeName,
@@ -47,6 +56,10 @@ export default function SearchPlace() {
 
     return (
         <View style={styles.container}>
+            {errorMessage && (
+                <NotificationMessage visible={modalVisible} id={1} message={errorMessage} onClose={() => setModalVisible(false)}/>
+            )}
+
             <View>
                 <View style={styles.searchBar}>
                     <TextInput
@@ -59,11 +72,11 @@ export default function SearchPlace() {
                 </View>
             </View>
 
-            { loading ?
+            { loading ? 
                 (<ActivityIndicator style={{marginTop: 20}} size="large" color={Colors.PRIMARAY} />)
-                : destination === null ?
+                : destination === null ? 
                     ( <Text style={styles.noTripsText}>No such a place called {search}.</Text> ) :
-                    ((card) && (
+                    (card && (
                         <View style={styles.resultContainer}>
                             <PlaceCard destination={destination}/>
                             <TouchableOpacity onPress={valContinue} style={styles.continueButton}>

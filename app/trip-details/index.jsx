@@ -11,32 +11,19 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../../configs/FirebaseConfig';
 import ModalMessage from '../../components/ModalMessage';
+import { getPlacePhoto } from '../../utils/googlePlaceUtils';
 
 export default function TripDetails() {
   const navigation = useNavigation();
   const router = useRouter();
   const { tripData } = useLocalSearchParams(); 
-  const [tripDetails, setTripDetails] = useState();
+  const [tripDetails, setTripDetails] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [photo, setPhoto] = useState(null); 
 
   useEffect(() => {
-    navigation.setOptions({
-      headerShown: true,
-      headerTransparent: true,
-      headerTitle: '',
-      headerLeft: () => (
-        <TouchableOpacity onPress={() => router.push('./mytrip')}>
-          <Ionicons style={{ marginLeft: 15 }} name="chevron-back-circle" size={24} color="white" />
-        </TouchableOpacity>
-      ),
-      headerRight: () => (
-        <TouchableOpacity onPress={() => setModalVisible(true)}>
-          <MaterialIcons style={{ marginRight: 15 }} name="delete" size={24} color="red" />
-        </TouchableOpacity>
-      ),
-    });
-
+    // Ensure tripData is parsed and valid
     if (tripData) {
       try {
         const parsedData = JSON.parse(tripData);
@@ -45,7 +32,42 @@ export default function TripDetails() {
         console.error('Error parsing tripData:', error);
       }
     }
-  }, [tripData, navigation]);
+  }, [tripData]);
+
+  useEffect(() => {
+    // Fetch photo only when destination is available
+    if (tripDetails?.tripPlan?.tripDetails?.destination) {
+      const placeName = tripDetails.tripPlan.tripDetails.destination;
+      const fetchPhoto = async () => {
+        try {
+          const url = await getPlacePhoto(placeName);
+          setPhoto(url); 
+        } catch (error) {
+          console.error("Error fetching photo:", error);
+          setPhoto(null);
+        }
+      };
+      fetchPhoto();
+    }
+  }, [tripDetails?.tripPlan?.tripDetails?.destination]); 
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerShown: true,
+      headerTransparent: true,
+      headerTitle: '',
+      headerLeft: () => (
+        <TouchableOpacity  onPress={() => router.push('./mytrip')}>
+          <Ionicons style={[styles.navigationButton, { marginLeft: 15 }]} name="chevron-back-circle" size={24} color="black" />
+        </TouchableOpacity>
+      ),
+      headerRight: () => (
+        <TouchableOpacity onPress={() => setModalVisible(true)}>
+          <MaterialIcons style={[styles.navigationButton, { marginRight: 15 }]} name="delete" size={24} color="red" />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation, router]);
 
   const handleDelete = (confirmed) => {
     if (confirmed) {
@@ -56,23 +78,21 @@ export default function TripDetails() {
     setModalVisible(false);
   };
 
-  
- const deleteTrip = async () => {
-  try {
-    if (!tripDetails?.docId) {
-      throw new Error('Trip ID not found.');
+  const deleteTrip = async () => {
+    try {
+      if (!tripDetails?.docId) {
+        throw new Error('Trip ID not found.');
+      }
+
+      const tripDocRef = doc(db, 'UserTrips', tripDetails.docId); 
+      await deleteDoc(tripDocRef);
+      console.log('Trip successfully deleted');
+    } catch (error) {
+      console.error('Error deleting trip:', error);
+    } finally {
+      setLoading(false); 
     }
-
-    const tripDocRef = doc(db, 'UserTrips', tripDetails.docId); 
-    await deleteDoc(tripDocRef);
-    console.log('Trip successfully deleted');
-  } catch (error) {
-    console.error('Error deleting trip:', error);
-  } finally {
-    setLoading(false); 
-  }
-};
-
+  };
 
   if (!tripDetails) {
     return <ActivityIndicator size="large" color={Colors.PRIMARAY} />;
@@ -84,7 +104,7 @@ export default function TripDetails() {
   return (
     <ScrollView>
       <Image
-        source={require('./../../assets/images/card-trip.jpg')}
+        source={{uri: photo}} 
         style={{
           width: '100%',
           height: 330,
@@ -136,11 +156,11 @@ export default function TripDetails() {
       </View>
 
       <ModalMessage
-          visible={modalVisible}
-          message="Are you sure you want to delete this trip?"
-          onClose={() => setModalVisible(false)}
-          onConfirm={handleDelete}
-        />
+        visible={modalVisible}
+        message="Are you sure you want to delete this trip?"
+        onClose={() => setModalVisible(false)}
+        onConfirm={handleDelete}
+      />
     </ScrollView>
   );
 }
@@ -169,4 +189,10 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     alignItems: 'center',
   },
+  navigationButton: {
+    backgroundColor: 'rgba(255, 255, 255 ,0.5)',
+    padding: 10,
+    width: '75%',
+    borderRadius: 20
+  }
 });

@@ -1,11 +1,25 @@
 import { View, Image, Text, StyleSheet } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Colors } from '../../constants/Colors'
+import {getPlacePhoto} from '../../utils/googlePlaceUtils'
 
 export default function PlaceCard({destination}) {
+    const [photoUrl, setPhotoUrl] = useState(null);
+
+    useEffect(() => {
+        const fetchPhoto = async () => {
+        if (destination?.placeName) {
+            const url = await getPlacePhoto(destination.placeName);
+            setPhotoUrl(url);
+        }
+        };
+        fetchPhoto();
+    }, [destination?.placeName]);
+
   return (
     <View>
         <Image source={require('./../../assets/images/card-trip.jpg')}
+        // <Image source={require('./../../assets/images/card-trip.jpg')}
             style={{
                 width: '100%',
                 height: 300,

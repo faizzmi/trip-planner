@@ -5,6 +5,8 @@ import { Colors } from './../../../constants/Colors';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../../configs/FirebaseConfig';
+import LoadingModal from '../../../components/LoadingModal';
+import NotificationMessage from '../../../components/NotificationMessage';
 
 export default function SignIn() {
   const navigation = useNavigation();
@@ -13,7 +15,10 @@ export default function SignIn() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [hasError, setHasError] = useState({ email: false, password: false });
-  const [hasSubmitted, setHasSubmitted] = useState(false); // Track form submission
+  const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [notiModal, setNotiModal] = useState(false);
+  const [loadModal, setLoadModal] = useState(false);
 
   useEffect(() => {
     navigation.setOptions({
@@ -22,7 +27,8 @@ export default function SignIn() {
   });
 
   const onSignIn = () => {
-    setHasSubmitted(true); // Mark that the user has submitted the form
+    setLoadModal(true)
+    setHasSubmitted(true);
 
     let isValid = true;
 
@@ -41,6 +47,7 @@ export default function SignIn() {
     }
 
     if (!isValid) {
+      setLoadModal(false)
       return;
     }
 
@@ -54,13 +61,19 @@ export default function SignIn() {
         const errorCode = error.code;
         console.log(errorCode);
         if (errorCode === 'auth/invalid-credential') {
-          alert('Invalid credentials');
+          setErrorMessage('Invalid credentials');
+          setNotiModal(true);
+        } else {
+          setNotiModal(true);
+          setErrorMessage('An error occurred. Please try again.');
         }
-      });
+      setLoadModal(false)
+    });
   };
 
   return (
     <View style={styles.container}>
+      
       <TouchableOpacity onPress={() => router.back()}>
         <Ionicons name="chevron-back" size={24} color="black" />
       </TouchableOpacity>
@@ -101,6 +114,12 @@ export default function SignIn() {
       <TouchableOpacity onPress={() => router.replace('auth/sign-up')} style={styles.createAccountButton}>
         <Text style={styles.createAccountText}>Create Account</Text>
       </TouchableOpacity>
+      
+      <LoadingModal visible={loadModal} />
+       {errorMessage && (
+            <NotificationMessage visible={notiModal} id={1} message={errorMessage} onClose={() => setNotiModal(false)}/>
+        )}
+
     </View>
   );
 }

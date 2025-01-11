@@ -21,7 +21,7 @@ export default function discover() {
     <ScrollView style={{
       padding: 25,
       paddingTop: 55,
-      backgroundColor: Colors.WHITE,
+      backgroundColor: Colors.L_WHITE,
       height: '100%'
   }}>
     <Text style={{

@@ -1,9 +1,25 @@
 import { StyleSheet, Text, View, Image } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import moment from 'moment';
 import { Colors } from '../../constants/Colors';
+import { getPlacePhoto } from '../../utils/googlePlaceUtils'
 
 export default function UserTripCard({trip}) {
+
+    const [photo, setPhoto] = useState(); 
+    
+    useEffect(() => {
+        const placeName = trip.tripPlan?.tripDetails?.destination;
+        const fetchPhoto = async () => {
+            if (placeName) {
+                const url = await getPlacePhoto(placeName);
+                setPhoto(url); 
+            }
+        };
+        if (trip) {
+            fetchPhoto();
+        }
+    }, [trip]);
 
     const formatData = (data) => {
         return JSON.parse(data);
@@ -17,14 +33,13 @@ export default function UserTripCard({trip}) {
         gap: 10,
         alignItems: 'center'
          }}>
-        <Image
-            source={require('./../../assets/images/card-trip.jpg')}
+            <Image
+            source={{ uri: photo }} 
             style={{ 
                 width: 100,
                 height: 100,
                 borderRadius: 15
         }} />
-
         <View>
             <Text style={{
                 fontFamily: 'outfit-medium',

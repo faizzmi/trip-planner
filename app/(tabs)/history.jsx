@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
     container: {
         padding: 25,
         paddingTop: 55,
-        backgroundColor: Colors.WHITE,
+        backgroundColor: Colors.L_WHITE,
         height: '100%',
     },
     noTripsText: {

@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     container: {
         padding: 25,
         paddingTop: 75,
-        backgroundColor: Colors.WHITE,
+        backgroundColor: Colors.L_WHITE,
         height: '100%',
     },
     searchBar: {

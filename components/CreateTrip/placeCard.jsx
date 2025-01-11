@@ -23,7 +23,7 @@ export default function PlaceCard({destination}) {
     };
 
   return (
-    <View style={{backgroundColor: Colors.WHITE}}>
+    <View style={{backgroundColor: Colors.WHITE, height: 500, elevation: 5, borderRadius: 15, borderColor: Colors.LIGHT_GRAY, borderWidth: 1, marginBottom: 20}}>
         <Image source={photoUrl? {uri: photoUrl} : require('./../../assets/images/card-trip.jpg')}
             style={{
                 width: '100%',

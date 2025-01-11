@@ -199,11 +199,16 @@ export default function ReviewTrip() {
             style={{
                 marginTop: 50,
                 padding: 15,
-                backgroundColor: tripData?.muslimFriendly ? Colors.PRIMARAY : Colors.LIGHT_GRAY,
+                backgroundColor: tripData?.muslimFriendly ? Colors.PRIMARAY : Colors.GRAY,
                 borderRadius: 15,
                 opacity: tripData?.muslimFriendly ? 1 : 0.5,
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: 10
             }}
-            disabled={!tripData?.muslimFriendly}
+            disabled={tripData?.muslimFriendly}
         >
             <Text
                 style={{
@@ -215,8 +220,8 @@ export default function ReviewTrip() {
             >
                 Plan My Trip
             </Text>
-            {tripData?.muslimFriendly && (
-                <ActivityIndicator style={{ marginTop: 20 }} size="large" color={Colors.WHITE} />
+            {!tripData?.muslimFriendly && (
+                <ActivityIndicator size="small" color={Colors.WHITE} />
             )}
         </TouchableOpacity>
 

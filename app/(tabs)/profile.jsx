@@ -30,13 +30,11 @@ export default function Profile() {
     email: user?.email || '',
     nationality: '',
     religion: '',
-    profilePicture: ''
+    // profilePicture: ''
   });
   const [tempProfileData, setTempProfileData] = useState({ ...profileData });
 
   useEffect(() => {
-    isMounted.current = true;
-
     navigation.setOptions({
       headerShown: true,
       headerTransparent: true,
@@ -46,81 +44,96 @@ export default function Profile() {
           <Ionicons style={{ marginRight: 15 }} name="log-out" size={24} color="black" />
         </TouchableOpacity>
       ),
-    }, );
-
-    if (user) {
-      getProfileData();
-    }
-
-    return () => {
-      isMounted.current = false;
-    };
+    });
   }, []);
 
+  useEffect(() => {
+  let mounted = true;
+  
   const getProfileData = async () => {
-    try {
-      const q = query(collection(db, 'users'), where('email', '==', user?.email));
-      const querySnapshot = await getDocs(q);
-      console.log(querySnapshot.docs[0].data())
+    if (mounted) {
+      try {
+        const q = query(collection(db, 'users'), where('email', '==', user?.email));
+        const querySnapshot = await getDocs(q);
 
-      if (!querySnapshot.empty) {
-        const data = querySnapshot.docs[0].data();
-        setProfileData((prev) => ({
-          ...prev,
-          name: data.name || '',
-          phoneNumber: data.phoneNumber || '',
-          nationality: data.nationality || '',
-          religion: data.religion || '',
-          profilePicture: data.profilePicture || ''
-        }));
+        if (!querySnapshot.empty) {
+          const data = querySnapshot.docs[0].data();
+          setProfileData((prev) => ({
+            ...prev,
+            name: data.name || '',
+            phoneNumber: data.phoneNumber || '',
+            nationality: data.nationality || '',
+            religion: data.religion || '',
+            // profilePicture: data.profilePicture || ''
+          }));
 
-      }
-    } catch (error) {
-      console.error('Error fetching profile data:', error);
-    }
-  };
-
-  const pickImage = async () => {
-    try {
-      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (!permissionResult.granted) {
-        setErrorMessage('Permission to access media library is required!');
-        setNotiModal(true)
-        return;
-      }
-
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: 'Images',
-        allowsEditing: true,
-        quality: 1,
-      });
-
-      if (!result.canceled && isMounted.current) {
-        setTempProfileData({ ...profileData, profilePicture: result.uri });
-      }
-    } catch (error) {
-        if (isMounted.current) {
-          setNotiModal(true);
-          setErrorMessage('Error picking image');
         }
+      } catch (error) {
+        console.error('Error fetching profile data:', error);
+      }
     }
   };
+  
+  getProfileData();
+  
+  return () => {
+    mounted = false;
+  };
+}, []);
 
-  const handleLogOut = (logout) => {
-    const logOut = getAuth();
+  // const pickImage = async () => {
+  //   try {
+  //     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  //     if (!permissionResult.granted) {
+  //       setErrorMessage('Permission to access media library is required!');
+  //       setNotiModal(true)
+  //       return;
+  //     }
+
+  //     const result = await ImagePicker.launchImageLibraryAsync({
+  //       mediaTypes: 'Images',
+  //       allowsEditing: true,
+  //       quality: 1,
+  //     });
+
+  //     if (!result.canceled && isMounted.current) {
+  //       const url = await uploadImageToFirebase(result.uri);
+  //       setTempProfileData({ ...profileData, profilePicture: url });
+  //     }
+  //   } catch (error) {
+  //       if (isMounted.current) {
+  //         setNotiModal(true);
+  //         setErrorMessage('Error picking image');
+  //       }
+  //   }
+  // };
+
+  // const uploadImageToFirebase = async (uri) => {
+  //   const response = await fetch(uri);
+  //   const blob = await response.blob();
+  //   const storageRef = ref(storage, 'profilePicture/' + user.uid);
+  //   await uploadBytes(storageRef, blob);
+  //   const url = await getDownloadURL(storageRef);
+  //   return url;
+  // };
+
+  const handleLogOut = async (logout) => {
     if (logout) {
-      signOut(logOut)
-        .then(() => {
-          router.replace('auth/sign-in');
-        })
-        .catch((error) => {
-          setNotiModal(true);
-          setErrorMessage(error.message);
-        });
+      setUploading(true);
+      const logOut = getAuth();
+      try {
+        await signOut(logOut);
+        setUploading(false);
+        router.replace('auth/sign-in');
+      } catch (error) {
+        setUploading(false);
+        setNotiModal(true);
+        setErrorMessage(error.message);
+      }
     } else {
       setModalVisible(false);
     }
-  };
+};
 
   const toggleEdit = () => {
     if (!isEditing) {
@@ -130,6 +143,7 @@ export default function Profile() {
   };
 
   const handleSave = async () => {
+      setUploading(true);
     try {
       const userDocRef = doc(db, 'users', user.uid);
       await setDoc(userDocRef, { ...tempProfileData }, { merge: true });
@@ -138,8 +152,11 @@ export default function Profile() {
 
       setIsEditing(false);
       setNotiModal(true);
+      setUploading(false);
       setSuccessMessage('Profile saved successfully!'); 
     } catch (error) {
+      setIsEditing(false);
+      setUploading(false);
       setNotiModal(true);
       setErrorMessage('Error saving profile');
     }
@@ -151,16 +168,17 @@ export default function Profile() {
 
       <View style={styles.profileCard}>
         <View style={styles.profileSection}>
-          <TouchableOpacity onPress={() => isEditing && pickImage()}>
-            <Image
-              source={profileData.profilePicture ? { uri: profileData.profilePicture } : require('./../../assets/images/profile-picture.jpg')}
+          <TouchableOpacity>
+            <View
+              source={{ uri: './../../assets/images/profile-picture.jpg' }}
               style={styles.profileImage}
-            />
-            {isEditing && <Feather 
-            style={styles.editPhoto} name="edit" size={24} color="white" />}
+            ></View>
+            {/* {isEditing && 
+              <Feather style={styles.editPhoto} name="edit" size={24} color="white" />
+            } */}
           </TouchableOpacity>
           <Text style={styles.name}>{profileData.name || 'Your Name'}</Text>
-          {uploading && <LoadingModal visible={uploading} />}
+          
         </View>
 
         <View style={styles.detailsSection}>
@@ -249,6 +267,7 @@ export default function Profile() {
           onClose={() => setNotiModal(false)}
         />
       )}
+      {uploading && <LoadingModal visible={uploading} />}
     </ScrollView>
   );
 }
@@ -274,6 +293,7 @@ const styles = StyleSheet.create({
     height: 120,
     borderRadius: 60,
     marginTop: 60,
+    backgroundColor: Colors.LIGHT_GRAY,
   },
   name: {
     marginTop: 10,

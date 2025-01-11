@@ -14,7 +14,6 @@ async function getPlaceId(placeName) {
         if (!placeId) throw new Error('Place ID not found.');
         return placeId;
     } catch (error) {
-        console.error('Error fetching Place ID:', error.message);
         throw error;
   }
 }
@@ -30,7 +29,6 @@ async function getPhotoReference(placeId) {
         if (!photoReference) throw new Error('Photo reference not found.');
         return photoReference;
     } catch (error) {
-        console.error('Error fetching photo reference:', error.message);
         throw error;
     }
 }
@@ -47,6 +45,5 @@ export async function getPlacePhoto(placeName) {
         const photoUrl = getPhotoUrl(photoReference);
         return photoUrl;
     } catch (error) {
-        console.error('Error fetching place photo:', error.message);
     }
 }

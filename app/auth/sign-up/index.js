@@ -6,6 +6,8 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../../configs/FirebaseConfig';
 import NotificationMessage from '../../../components/NotificationMessage';
+import LoadingModal from '../../../components/LoadingModal';
+import { set } from 'date-fns';
 
 export default function SignUp() {
   const navigation = useNavigation();
@@ -16,6 +18,7 @@ export default function SignUp() {
   const [password, setPassword] = useState();
   const [errorMessage, setErrorMessage] = useState('');
   const [notiModal, setNotiModal] = useState(false);
+  const [loadModal, setLoadModal] = useState(false);
 
   useEffect(() => {
     navigation.setOptions({
@@ -24,11 +27,30 @@ export default function SignUp() {
   })
 
   const onCreateAccount = () => {
+    setLoadModal(true);
 
+    const isValidEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
+      
     if(!email && !password && !fullname){
       setErrorMessage('Please enter all input field!');
       setNotiModal(true)
       return;
+    } else {
+      if (!isValidEmail) {
+        setErrorMessage('Please enter a valid email address');
+        setNotiModal(true);
+        setLoadModal(false);
+        return;
+      }
+
+      if (password.length < 6) {
+        setErrorMessage('Password should be at least 6 characters long');
+        setLoadModal(false);
+        setNotiModal(true);
+        return;
+      }
+
+
     }
 
     createUserWithEmailAndPassword(auth, email, password)
@@ -40,9 +62,16 @@ export default function SignUp() {
     })
     .catch((error) => {
       const errorCode = error.code;
-      const errorMessage = error.message;
-      console.log("--", errorCode, errorMessage, error);
-      // ..
+      let errorMessage = 'An error occurred. Please try again.';
+    
+      if (errorCode === 'auth/email-already-in-use') {
+        errorMessage = 'This email is already in use.';
+      } else if (errorCode === 'auth/weak-password') {
+        errorMessage = 'Password should be at least 6 characters long.';
+      }
+      
+      setErrorMessage(errorMessage);
+      setNotiModal(true);
     });
   }
 
@@ -143,12 +172,13 @@ export default function SignUp() {
                 color:Colors.PRIMARAY,
                 textAlign:'center',
             }}
-        >Alradey Have An Account?</Text>
+        >Already Have An Account?</Text>
       </TouchableOpacity>
       
       {errorMessage && (
-          <NotificationMessage visible={notiModal} id={1} message={errorMessage} onClose={() => setNotiModal(false)}/>
-      )}
+          <NotificationMessage visible={notiModal} id={1} message={errorMessage} onClose={() => {setNotiModal(false); setErrorMessage('');}}/>
+      )} 
+      <LoadingModal visible={loadModal} />
       
     </View>
   )

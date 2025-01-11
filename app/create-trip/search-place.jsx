@@ -30,28 +30,35 @@ export default function SearchPlace() {
     }, []);
 
     const searchPlace = async () => {
+        if (loading || !input.trim()) return; // avoid multiple requests
         setLoading(true);
         setSearch(input);
 
         try {
             const FINAL_PROMPT = SEARCH_PROMPT.replace('{search}', search);
             const result = await searchTravelDestination.sendMessage(FINAL_PROMPT);
+            const response = JSON.parse(result.response.text());
 
-            if(JSON.parse(result.response.text()).placeName == null) {
+            if (response.placeName == null) {
                 setLoading(false);
                 setDestination(null);
                 return;
             }
 
             setLoading(false);
-            setDestination(JSON.parse(result.response.text()));
-            console.log(JSON.parse(result.response.text()).placeName);
+            setDestination(response);
             setCard(true);
         } catch (error) {
             setLoading(false);
-            setModalVisible(true)
+            setModalVisible(true);
             setErrorMessage("The service is currently unavailable. Please try again later.");
         }
+    };
+
+    const handleInputChange = (value) => {
+        setInput(value);
+        setErrorMessage('');
+        setCard(false);
     };
 
     const valContinue = () => { 
@@ -66,7 +73,7 @@ export default function SearchPlace() {
     return (
         <View style={styles.container}>
             {errorMessage && (
-                <NotificationMessage visible={modalVisible} id={1} message={errorMessage} onClose={() => setModalVisible(false)}/>
+                <NotificationMessage visible={modalVisible} id={1} message={errorMessage} onClose={() => setModalVisible(false)} />
             )}
 
             <View>
@@ -75,9 +82,9 @@ export default function SearchPlace() {
                         style={styles.input}
                         placeholder="Search Place"
                         value={input}
-                        onChangeText={(value) => setInput(value)}
+                        onChangeText={handleInputChange}
                     />
-                    <Ionicons onPress={searchPlace} style={styles.icon} name="search" size={24} color="black" />
+                    <Ionicons onPress={searchPlace} style={styles.icon} name="search" size={24} color={input.trim() ? "black" : "gray"} />
                 </View>
             </View>
 

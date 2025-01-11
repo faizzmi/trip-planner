@@ -7,6 +7,7 @@ import { useRouter } from 'expo-router';
 import { auth, db } from './../../configs/FirebaseConfig';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import UserTripList from '../../components/MyTrips/UserTripList';
+import LoadingModal from '../../components/LoadingModal';
 
 export default function MyTrip() {
     const [userTrips, setUserTrips] = useState([]);
@@ -15,8 +16,8 @@ export default function MyTrip() {
     const router = useRouter();
 
     useEffect(() => {
-        if (user) GetMyTrip();
-    }, []);
+        if (user) {GetMyTrip();}
+    }, [user]);
 
     const GetMyTrip = async () => {
         setLoading(true);
@@ -32,39 +33,40 @@ export default function MyTrip() {
     }
 
     return (
-        <ScrollView style={{
-            padding: 25,
-            paddingTop: 55,
-            backgroundColor: Colors.WHITE,
-            height: '100%'
-        }}>
-            <View style={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignContent: 'center',
-                justifyContent: 'space-between'
-            }}>
-                <Text style={{
-                    fontFamily: 'outfit-bold',
-                    fontSize: 35
-                }}>My Trips</Text>
-                <TouchableOpacity onPress={() => router.push('/create-trip/search-place')}>
-                    <Ionicons name="add-circle" size={50} color="black" />
-                </TouchableOpacity>
-            </View>
-
-            {loading ? 
-                (  <View style={{ marginTop: 20 }}>
-                    <ActivityIndicator size="large" color={Colors.PRIMARAY} />
-                </View> ) : 
-                ( userTrips.length === 0 ? 
-                    ( <StartNewTripCard /> ) : 
-                    ( <UserTripList userTrips={userTrips} /> )
-                )
-            }
-
-        </ScrollView>
+        <ScrollView style={styles.container}>
+        <View style={styles.header}>
+            <Text style={styles.headerText}>My Trips</Text>
+            <TouchableOpacity onPress={() => router.push('/create-trip/search-place')}>
+                <Ionicons name="add-circle" size={50} color={'black'} />
+            </TouchableOpacity>
+        </View>
+        {loading ? (
+            <LoadingModal visible={loading}/>
+        ) : (
+            userTrips.length === 0 ? <StartNewTripCard /> : <UserTripList userTrips={userTrips} />
+        )}
+    </ScrollView>
     );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+    container: {
+        padding: 25,
+        paddingTop: 55,
+        backgroundColor: Colors.WHITE,
+        height: '100%',
+    },
+    header: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignContent: 'center',
+        justifyContent: 'space-between',
+    },
+    headerText: {
+        fontFamily: 'outfit-bold',
+        fontSize: 35,
+    },
+    loaderContainer: {
+        marginTop: 20,
+    }
+});

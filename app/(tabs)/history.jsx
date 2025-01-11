@@ -16,7 +16,8 @@ export default function History() {
     const user = auth.currentUser;
     
     const sortedTrips = sortTripsByStartDate(userTrips);
-    const historyTrips = sortedTrips.filter((trip) => isHistoryTrip(trip)).reverse();
+    const historyTrips = [...sortedTrips].filter((trip) => isHistoryTrip(trip)).reverse();
+
 
     useEffect(() => {
         if (user) GetMyTrip();
@@ -54,7 +55,7 @@ export default function History() {
                     historyTrips.length > 0 ? 
                         historyTrips.map((trip, index) => (
                             <TouchableOpacity
-                                key={index}
+                                key={trip.id}
                                 onPress={() =>
                                     router.push({
                                         pathname: '/trip-details',

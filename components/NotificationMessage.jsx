@@ -1,5 +1,5 @@
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native'
-import React, { useEffect } from 'react'
+import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import React, { useEffect } from 'react';
 import { Colors } from '../constants/Colors';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
@@ -19,10 +19,10 @@ export default function NotificationMessage({ visible, id, message, onClose }) {
             <Pressable style={styles.modalOverlay}>
                 <View style={styles.modalContent}>
                     {id === 1 ? 
-                        (<MaterialIcons name="error-outline" size={24} color="red" />) : 
-                        (<MaterialIcons name="check-circle-outline" size={24} color="green" />)
+                        (<MaterialIcons name="error-outline" size={28} color="red" accessibilityLabel="Error" />) : 
+                        (<MaterialIcons name="check-circle-outline" size={28} color="green" accessibilityLabel="Success" />)
                     }
-                    <Text>{message}</Text>
+                    <Text style={styles.messageText} accessibilityLabel={message}>{message}</Text>
                 </View>
             </Pressable>
         </Modal>
@@ -44,8 +44,14 @@ const styles = StyleSheet.create({
         padding: 20,
         display: 'flex',
         flexDirection: 'row',
-        justifyContent: 'center',
+        justifyContent: 'justify',
         gap: 20,
         alignItems: 'center',
+    },
+    messageText: {
+        fontFamily: 'outfit',
+        fontSize: 16,
+        color: Colors.BLACK,
+        textAlign: 'center',
     }
 });

@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, View, ScrollView, ActivityIndicator, TouchableOpacity, Modal, Pressable } from 'react-native';
+import { Image, StyleSheet, Text, View, ScrollView, ActivityIndicator, TouchableOpacity, Modal } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { Colors } from '../../constants/Colors';
@@ -13,6 +13,7 @@ import { db } from '../../configs/FirebaseConfig';
 import ModalMessage from '../../components/ModalMessage';
 import { getPlacePhoto } from '../../utils/googlePlaceUtils';
 import NotificationMessage from '../../components/NotificationMessage';
+import LoadingModal from '../../components/LoadingModal';
 
 export default function TripDetails() {
   const navigation = useNavigation();
@@ -23,8 +24,8 @@ export default function TripDetails() {
   const [successMessage, setSuccessMessage] = useState('');
   const [notiModal, setNotiModal] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [photo, setPhoto] = useState(null); 
+  const [loading, setLoading] = useState(true);
+  const [photo, setPhoto] = useState(null);
 
   useEffect(() => {
     if (tripData) {
@@ -43,15 +44,17 @@ export default function TripDetails() {
       const fetchPhoto = async () => {
         try {
           const url = await getPlacePhoto(placeName);
-          setPhoto(url); 
+          setPhoto(url);
         } catch (error) {
           console.error("Error fetching photo:", error);
           setPhoto(null);
+        } finally {
+          setLoading(false);
         }
       };
       fetchPhoto();
     }
-  }, [tripDetails?.tripPlan?.tripDetails?.destination]); 
+  }, [tripDetails?.tripPlan?.tripDetails?.destination]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -87,75 +90,45 @@ export default function TripDetails() {
 
       const tripDocRef = doc(db, 'UserTrips', tripDetails.docId); 
       await deleteDoc(tripDocRef);
-      setSuccessMessage(`Trip to ${tripPlan?.tripDetails?.destination} successfully deleted`);
+      setSuccessMessage(`Trip to ${tripDetails?.tripPlan?.tripDetails?.destination} successfully deleted`);
       setNotiModal(true);
     } catch (error) {
       setErrorMessage('Error deleting trip');
       setNotiModal(true);
-    } finally {
-      setLoading(false); 
     }
   };
 
-  if (!tripDetails) {
-    return <ActivityIndicator size="large" color={Colors.PRIMARAY} />;
+  if (loading) {
+    return <LoadingModal visible={loading} />;
   }
 
   const { tripPlan, tripData: rawTripData } = tripDetails;
   const parsedTripData = JSON.parse(rawTripData);
-  console.log(tripPlan?.flightDetails)
 
   return (
     <ScrollView>
       <Image
-        source={{uri: photo}} 
-        style={{
-          width: '100%',
-          height: 330,
-        }}
+        source={photo ? {uri: photo} : require('../../assets/images/defaultPlace.jpg')}
+        style={styles.image}
       />
-      <View
-        style={{
-          marginTop: -30,
-          padding: 15,
-          height: '100%',
-          backgroundColor: Colors.WHITE,
-          borderTopLeftRadius: 15,
-          borderTopRightRadius: 15,
-        }}
-      >
-        <Text
-          style={{
-            fontSize: 30,
-            fontFamily: 'outfit-bold',
-          }}
-        >
-          {tripPlan?.tripDetails?.destination}
-        </Text>
+      <View style={styles.tripDetailsContainer}>
+        <Text style={styles.destinationText}>{tripPlan?.tripDetails?.destination}</Text>
 
-        <View style={{ flexDirection: 'row', gap: 10, marginTop: 5 }}>
-          <Text style={{ fontSize: 18, fontFamily: 'outfit' }}>
+        <View style={styles.dateContainer}>
+          <Text style={styles.dateText}>
             {moment(parsedTripData.startDate).format('DD MMM YYYY')}
           </Text>
-          <Text style={{ fontSize: 18, fontFamily: 'outfit' }}>
+          <Text style={styles.dateText}>
             {moment(parsedTripData.endDate).format('DD MMM YYYY')}
           </Text>
         </View>
 
-        <Text
-          style={{
-            fontSize: 18,
-            fontFamily: 'outfit',
-            marginTop: 10,
-          }}
-        >
+        <Text style={styles.travelerText}>
           ⚡ {parsedTripData.traveler?.title}
         </Text>
 
         <FlightInfo flightData={tripPlan?.flightDetails} />
-
         <HotelList hotelList={tripPlan?.hotelOptions} />
-
         <TripPlan details={tripPlan?.dailyItinerary} />
       </View>
 
@@ -167,45 +140,50 @@ export default function TripDetails() {
       />
       {(errorMessage || successMessage) && (
         <NotificationMessage
-            visible={notiModal}
-            id={errorMessage ? 1 : 2}
-            message={errorMessage || successMessage}
-            onClose={() => setNotiModal(false)}
+          visible={notiModal}
+          id={errorMessage ? 1 : 2}
+          message={errorMessage || successMessage}
+          onClose={() => setNotiModal(false)}
         />
       )}
-
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  modalOverlay: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  image: {
+    width: '100%',
+    height: 330,
   },
-  modalContent: {
-    backgroundColor: Colors.WHITE,
-    padding: 20,
-    borderRadius: 10,
-    width: '80%',
-    elevation: 5,
+  tripDetailsContainer: {
+    marginTop: -30,
+    padding: 15,
+    backgroundColor: Colors.L_WHITE,
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
   },
-  modalText: {
+  destinationText: {
+    fontSize: 30,
+    fontFamily: 'outfit-bold',
+  },
+  dateContainer: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 5,
+  },
+  dateText: {
+    fontSize: 18,
     fontFamily: 'outfit',
-    fontSize: 16,
-    color: Colors.BLACK,
-    textAlign: 'center',
   },
-  modalItem: {
-    paddingVertical: 10,
-    alignItems: 'center',
+  travelerText: {
+    fontSize: 18,
+    fontFamily: 'outfit',
+    marginTop: 10,
   },
   navigationButton: {
     backgroundColor: 'rgba(255, 255, 255 ,0.5)',
     padding: 10,
     width: '75%',
-    borderRadius: 20
-  }
+    borderRadius: 20,
+  },
 });

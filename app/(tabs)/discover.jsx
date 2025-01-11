@@ -14,7 +14,7 @@ export default function discover() {
       headerShown: false,
       headerTransparent: false,
 
-    }, [])
+    }, [navigation])
   })
 
   return (

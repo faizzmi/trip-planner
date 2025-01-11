@@ -13,6 +13,7 @@ export default function ReviewTrip() {
     const navigation = useNavigation();
     const router = useRouter();
     const user = auth.currentUser;
+    const [error, setError] = useState('');
     const {tripData, setTripData} = useContext(CreateTripContext);
 
     useEffect(() => {
@@ -28,20 +29,28 @@ export default function ReviewTrip() {
         try {
           const q = query(collection(db, 'users'), where('email', '==', user?.email));
           const querySnapshot = await getDocs(q);
-          console.log(querySnapshot.docs[0].data())
     
           if (!querySnapshot.empty) {
             const data = querySnapshot.docs[0].data();
             setTripData((prev) => ({
               ...prev,
               muslimFriendly: data.religion,
+              country: data.nationality,
             }));
     
           }
         } catch (error) {
-          console.log('Error fetching profile data:', error);
+            setError('Failed to load profile data');
         }
       };
+
+      const buttonStyle = tripData?.muslimFriendly
+        ? { backgroundColor: Colors.PRIMARAY, opacity: 1 }
+        : { backgroundColor: Colors.GRAY, opacity: 0.5 };
+
+        const buttonTextStyle = tripData?.muslimFriendly
+        ? { color: Colors.WHITE }
+        : { color: Colors.LIGHT_GRAY };
 
   return (
     <View style={{
@@ -62,6 +71,7 @@ export default function ReviewTrip() {
                 fontSize: 20
             }}>Before generating your trip, please review your selection</Text>
         </View>
+        {error && <Text style={{ color: 'red' }}>{error}</Text>}
 
         <View style={{marginTop: 40, padding: 25, elevation: 3, backgroundColor: Colors.WHITE, borderWidth: 1, borderColor: Colors.GRAY, borderRadius: 15}}>
             <View style={{
@@ -196,32 +206,14 @@ export default function ReviewTrip() {
 
         <TouchableOpacity
             onPress={tripData?.muslimFriendly ? () => router.replace('/create-trip/generate-trip') : null}
-            style={{
-                marginTop: 50,
-                padding: 15,
-                backgroundColor: tripData?.muslimFriendly ? Colors.PRIMARAY : Colors.GRAY,
-                borderRadius: 15,
-                opacity: tripData?.muslimFriendly ? 1 : 0.5,
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center',
-                gap: 10
-            }}
-            disabled={tripData?.muslimFriendly}
+            style={[styles.button, buttonStyle]}
+            disabled={!tripData?.muslimFriendly}
         >
-            <Text
-                style={{
-                    color: Colors.WHITE,
-                    textAlign: 'center',
-                    fontFamily: 'outfit-medium',
-                    fontSize: 20,
-                }}
-            >
-                Plan My Trip
+            <Text style={[styles.buttonText, buttonTextStyle]}>
+            Plan My Trip
             </Text>
             {!tripData?.muslimFriendly && (
-                <ActivityIndicator size="small" color={Colors.WHITE} />
+            <ActivityIndicator size="small" color={Colors.WHITE} />
             )}
         </TouchableOpacity>
 
@@ -229,4 +221,62 @@ export default function ReviewTrip() {
   )
 }
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+    container: {
+        padding: 25,
+        paddingTop: 75,
+        backgroundColor: Colors.L_WHITE,
+        height: '100%',
+    },
+    header: {
+        fontFamily: 'outfit-bold',
+        fontSize: 35,
+        marginTop: 20,
+    },
+    subHeader: {
+        fontFamily: 'outfit-bold',
+        fontSize: 20,
+    },
+    tripDetail: {
+        marginTop: 40,
+        padding: 25,
+        elevation: 3,
+        backgroundColor: Colors.WHITE,
+        borderWidth: 1,
+        borderColor: Colors.GRAY,
+        borderRadius: 15,
+    },
+    tripDetailRow: {
+        display: 'flex',
+        flexDirection: 'row',
+        gap: 20,
+    },
+    tripDetailIcon: {
+        fontSize: 30,
+    },
+    tripDetailLabel: {
+        fontFamily: 'outfit',
+        fontSize: 20,
+        color: Colors.GRAY,
+    },
+    tripDetailValue: {
+        fontFamily: 'outfit-medium',
+        fontSize: 20,
+    },
+    button: {
+        marginTop: 50,
+        padding: 15,
+        borderRadius: 15,
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 10,
+    },
+        buttonText: {
+        textAlign: 'center',
+        fontFamily: 'outfit-medium',
+        fontSize: 20,
+    },
+
+})

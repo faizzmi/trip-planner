@@ -1,72 +1,104 @@
-import { StyleSheet, Text, View, Image } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { Colors } from '../../constants/Colors'
+import { StyleSheet, Text, View, Image } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Colors } from '../../constants/Colors';
 import { getPlacePhoto } from '../../utils/googlePlaceUtils';
 
-export default function DiscoverCard({place}) {
-    const [photo, setPhoto] = useState(); 
-        
-        useEffect(() => {
-            const placeName = place?.placeName;
-            const fetchPhoto = async () => {
-                if (placeName) {
-                    const url = await getPlacePhoto(placeName);
-                    setPhoto(url); 
-                }
-            };
-            if (place) {
-                fetchPhoto();
-            }
-        }, [place]);
-    
+export default function DiscoverCard({ place }) {
+  const [photo, setPhoto] = useState(null);
+
+  useEffect(() => {
+    const fetchPhoto = async () => {
+      try {
+        if (place?.placeName) {
+          const url = await getPlacePhoto(place.placeName);
+          setPhoto(url);
+        }
+      } catch (error) {
+        setPhoto(null); 
+    }
+    };
+
+    fetchPhoto();
+  }, [place]);
+
   return (
-    <View style={{ elevation: 5, borderRadius: 15, marginTop: 20, backgroundColor: Colors.WHITE}}>
-        <Image source={{uri: photo}}
-            style={{
-                width: '100%',
-                height: 180,
-                borderTopLeftRadius: 15,
-                borderTopRightRadius: 15,
-        }}/>
-        <View style={{padding: 20}}>
-            <Text style={{
-                fontFamily: 'outfit-bold',
-                fontSize: 20
-            }}>{place?.placeName}</Text>
-            <Text style={{
-                fontFamily: 'outfit',
-                fontSize: 17,
-                textAlign: 'justify'
-            }}>{place?.location}</Text>
-            <Text style={{
-                fontFamily: 'outfit',
-                fontSize: 17,
-                color: Colors.GRAY,
-                textAlign: 'justify'
-            }}>
-                {place?.desc}. <Text style={{fontFamily: 'outfit' }}>{place?.desc}</Text>
+    <View style={styles.card} accessible={true} accessibilityLabel={`Discover card for ${place?.placeName}`}>
+      <Image
+        source={
+          photo
+            ? { uri: photo }
+            : require('./../../assets/images/defaultPlace.jpg')
+        }
+        style={styles.image}
+      />
+      <View style={styles.content}>
+        <Text style={styles.title}>{place?.placeName}</Text>
+        <Text style={styles.location}>{place?.location}</Text>
+        {place?.desc && (
+          <Text style={styles.description}>
+            {place?.desc}
+          </Text>
+        )}
+        <View style={styles.extraInfo}>
+          {place?.ticket && (
+            <Text style={styles.infoText}>
+              🎟️ <Text style={styles.infoSubText}>{place?.ticket}</Text>
             </Text>
-            <View style={{marginTop: 20}}>
-                <Text style={{
-                    fontFamily: 'outfit',
-                    fontSize: 17
-                }}>🎟️ <Text style={{ fontFamily: 'outfit' }}>{place?.ticket}</Text></Text>
-                
-                <Text style={{
-                    fontFamily: 'outfit',
-                    fontSize: 17
-                }}>🎁 <Text style={{ fontFamily: 'outfit' }}>{place?.openingDate}</Text></Text>
-                
-                {/* <Text style={{
-                    fontFamily: 'outfit',
-                    fontSize: 17
-                }}>🕸️ <Text style={{ fontFamily: 'outfit', color: Colors.GRAY }}>{place?.website}</Text></Text> */}
-                
-            </View>
+          )}
+          {place?.openingDate && (
+            <Text style={styles.infoText}>
+              🎁 <Text style={styles.infoSubText}>{place?.openingDate}</Text>
+            </Text>
+          )}
         </View>
+      </View>
     </View>
-    
-  )
+  );
 }
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  card: {
+    elevation: 5,
+    borderRadius: 15,
+    marginTop: 20,
+    borderWidth: 1,
+    borderColor: Colors.GRAY,
+    backgroundColor: Colors.WHITE,
+  },
+  image: {
+    width: '100%',
+    height: 180,
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
+  },
+  content: {
+    padding: 20,
+  },
+  title: {
+    fontFamily: 'outfit-bold',
+    fontSize: 20,
+  },
+  location: {
+    fontFamily: 'outfit',
+    fontSize: 17,
+    textAlign: 'justify',
+  },
+  description: {
+    fontFamily: 'outfit',
+    fontSize: 17,
+    color: Colors.GRAY,
+    textAlign: 'justify',
+    marginTop: 10,
+  },
+  extraInfo: {
+    marginTop: 20,
+  },
+  infoText: {
+    fontFamily: 'outfit',
+    fontSize: 17,
+    marginBottom: 5,
+  },
+  infoSubText: {
+    fontFamily: 'outfit',
+  },
+});

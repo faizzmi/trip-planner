@@ -6,58 +6,81 @@ export default function FlightInfo({ flightData }) {
   const [showDetails, setShowDetails] = useState(false);
 
   if (!flightData) {
-    return <Text>No flight information available</Text>;
+    return <Text style={styles.errorText}>No flight information available</Text>;
   }
 
+  const {
+    bookingUrl,
+    estimatedFlightPrice,
+    outboundFlight,
+    returnFlight,
+  } = flightData;
+
   const handleNavigateToWebsite = () => {
-    const url = flightData.bookingUrl;
-    Linking.openURL(url).catch((err) => {
-      console.error('Failed to open URL:', err);
-    });
+    if (bookingUrl) {
+      Linking.openURL(bookingUrl).catch((err) =>
+        console.error('Failed to open URL:', err)
+      );
+    } else {
+      console.error('No booking URL provided');
+    }
+  };
+
+  const renderFlightDetails = (flight, type) => {
+    if (!flight) {
+      return <Text style={styles.errorText}>{`No ${type} flight information available`}</Text>;
+    }
+
+    return (
+      <>
+        <Text style={styles.sectionTitle}>{`${type} Flight`}</Text>
+        <Text style={styles.detail}>Airline: {flight.airline || 'N/A'}</Text>
+        <Text style={styles.detail}>
+          Departure: {flight.departureLocation || 'Unknown'} - {flight.departureTime || 'N/A'}
+        </Text>
+        <Text style={styles.detail}>
+          Arrival: {flight.arrivalLocation || 'Unknown'} - {flight.arrivalTime || 'N/A'}
+        </Text>
+        <Text style={styles.detail}>Duration: {flight.flightDuration || 'N/A'}</Text>
+      </>
+    );
   };
 
   return (
+    <>
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Flight Details</Text>
-        <TouchableOpacity style={styles.button} onPress={handleNavigateToWebsite}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleNavigateToWebsite}
+          accessible
+          accessibilityLabel="Navigate to booking website"
+        >
           <Text style={styles.buttonText}>Book Here</Text>
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.price}>Airline: {flightData.outboundFlight.airline}</Text>
-      <Text style={styles.price}>Estimated Price: {flightData.estimatedFlightPrice}</Text>
+      <Text style={styles.price}>Airline: {outboundFlight?.airline || 'N/A'}</Text>
+      <Text style={styles.price}>Estimated Price: {estimatedFlightPrice || 'N/A'}</Text>
 
-      <TouchableOpacity onPress={() => setShowDetails(!showDetails)} style={{marginTop: 15, marginBottom: showDetails && 15}}>
+      <TouchableOpacity
+        onPress={() => setShowDetails(!showDetails)}
+        style={styles.toggleDetailsButton}
+        accessible
+        accessibilityLabel={showDetails ? 'Hide flight details' : 'Show flight details'}
+      >
         <Text>{showDetails ? 'Hide Details' : 'Show Details'}</Text>
       </TouchableOpacity>
-
-      {showDetails && (
-        <View style={styles.detailsContainer}>
-          <Text style={styles.sectionTitle}>Outbound Flight</Text>
-          <Text style={styles.detail}>Airline: {flightData.outboundFlight.airline}</Text>
-          <Text style={styles.detail}>
-            Departure: {flightData.outboundFlight.departureLocation} - {flightData.outboundFlight.departureTime}
-          </Text>
-          <Text style={styles.detail}>
-            Arrival: {flightData.outboundFlight.arrivalLocation} - {flightData.outboundFlight.arrivalTime}
-          </Text>
-          <Text style={styles.detail}>Duration: {flightData.outboundFlight.flightDuration}</Text>
-
-          <View style={styles.separator} />
-
-          <Text style={styles.sectionTitle}>Return Flight</Text>
-          <Text style={styles.detail}>Airline: {flightData.returnFlight.airline}</Text>
-          <Text style={styles.detail}>
-            Departure: {flightData.returnFlight.departureLocation} - {flightData.returnFlight.departureTime}
-          </Text>
-          <Text style={styles.detail}>
-            Arrival: {flightData.returnFlight.arrivalLocation} - {flightData.returnFlight.arrivalTime}
-          </Text>
-          <Text style={styles.detail}>Duration: {flightData.returnFlight.flightDuration}</Text>
-        </View>
-      )}
     </View>
+    {showDetails && (
+      <View style={styles.detailsContainer}>
+        {renderFlightDetails(outboundFlight, 'Outbound')}
+        <View style={styles.separator} />
+        {renderFlightDetails(returnFlight, 'Return')}
+      </View>
+    )}
+    </>
   );
 }
 
@@ -94,13 +117,20 @@ const styles = StyleSheet.create({
   price: {
     fontFamily: 'outfit-medium',
     fontSize: 18,
+    marginBottom: 5,
+  },
+  toggleDetailsButton: {
+    marginTop: 15,
+    marginBottom: 15,
   },
   detailsContainer: {
-    padding: 10,
+    padding: 20,
     backgroundColor: Colors.WHITE,
-    borderRadius: 10,
     borderColor: Colors.GRAY,
     borderWidth: 1,
+    marginTop: -10,
+    borderBottomRightRadius: 15,
+    borderBottomLeftRadius: 15,
   },
   sectionTitle: {
     fontFamily: 'outfit-bold',
@@ -116,5 +146,11 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: Colors.GRAY,
     marginVertical: 10,
+  },
+  errorText: {
+    fontFamily: 'outfit',
+    fontSize: 16,
+    color: Colors.GRAY,
+    textAlign: 'center',
   },
 });

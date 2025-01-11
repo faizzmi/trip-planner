@@ -1,64 +1,81 @@
-import { StyleSheet, Text, View, Image } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import { StyleSheet, Text, View, Image } from 'react-native';
+import React, { useEffect, useState, useMemo } from 'react';
 import moment from 'moment';
 import { Colors } from '../../constants/Colors';
-import { getPlacePhoto } from '../../utils/googlePlaceUtils'
+import { getPlacePhoto } from '../../utils/googlePlaceUtils';
 
-export default function UserTripCard({trip}) {
+export default function UserTripCard({ trip }) {
+  const [photo, setPhoto] = useState(null);
 
-    const [photo, setPhoto] = useState(); 
-    
-    useEffect(() => {
-        const placeName = trip.tripPlan?.tripDetails?.destination;
-        const fetchPhoto = async () => {
-            if (placeName) {
-                const url = await getPlacePhoto(placeName);
-                setPhoto(url); 
-            }
-        };
-        if (trip) {
-            fetchPhoto();
+  const placeName = trip?.tripPlan?.tripDetails?.destination;
+
+  useEffect(() => {
+    const fetchPhoto = async () => {
+      if (placeName) {
+        try {
+          const url = await getPlacePhoto(placeName);
+          setPhoto(url);
+        } catch (error) {
+          console.error('Error fetching photo:', error);
         }
-    }, [trip]);
+      }
+    };
+    fetchPhoto();
+  }, [placeName]);
 
-    const formatData = (data) => {
-        return JSON.parse(data);
+  const tripData = useMemo(() => {
+    try {
+      return JSON.parse(trip?.tripData || '{}');
+    } catch {
+      return {};
     }
+  }, [trip]);
 
   return (
-    <View style={{ 
-        marginTop: 15,
-        display: 'flex',
-        flexDirection: 'row',
-        gap: 10,
-        alignItems: 'center'
-         }}>
-            <Image
-            source={{ uri: photo }} 
-            style={{ 
-                width: 100,
-                height: 100,
-                borderRadius: 15
-        }} />
-        <View>
-            <Text style={{
-                fontFamily: 'outfit-medium',
-                fontSize: 18
-            }}>{trip.tripPlan?.tripDetails?.destination}</Text>
-            <Text style={{
-                fontFamily: 'outfit',
-                color: Colors.GRAY,
-                fontSize: 14
-            }}>{moment(formatData(trip.tripData).startDate).format('DD MMM YYYY')}</Text>
-            <Text style={{
-                fontFamily: 'outfit',
-                fontSize: 14,
-                color: Colors.GRAY
-            }}>Travelling: {formatData(trip.tripData).traveler.title}</Text>
-        </View>
-
+    <View style={styles.card}>
+      <Image
+        source={photo ? { uri: photo } : require('./../../assets/images/defaultPlace.jpg')}
+        style={styles.image}
+        accessible={true}
+        accessibilityLabel={`Photo of ${placeName || 'the trip destination'}`}
+      />
+      <View>
+        <Text style={styles.destination}>{placeName || 'Unknown Destination'}</Text>
+        <Text style={styles.date}>
+          {tripData.startDate ? moment(tripData.startDate).format('DD MMM YYYY') : 'No Start Date'}
+        </Text>
+        <Text style={styles.details}>
+          ⚡ {tripData.traveler?.title || 'Unknown Traveler'}
+        </Text>
+      </View>
     </View>
-  )
+  );
 }
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  card: {
+    marginTop: 15,
+    flexDirection: 'row',
+    gap: 10,
+    alignItems: 'center',
+  },
+  image: {
+    width: 100,
+    height: 100,
+    borderRadius: 15,
+  },
+  destination: {
+    fontFamily: 'outfit-medium',
+    fontSize: 18,
+  },
+  date: {
+    fontFamily: 'outfit',
+    color: Colors.GRAY,
+    fontSize: 14,
+  },
+  details: {
+    fontFamily: 'outfit',
+    fontSize: 14,
+    color: Colors.GRAY,
+  },
+});

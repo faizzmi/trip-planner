@@ -2,13 +2,13 @@ import { View, Text, Modal, StyleSheet, ActivityIndicator, Pressable } from 'rea
 import React from 'react';
 import { Colors } from '../constants/Colors';
 
-export default function LoadingModal({ visible }) {
+export default function LoadingModal({ visible, message = "Please Wait..." }) {
   return (
     <Modal visible={visible} animationType="fade" transparent>
       <Pressable style={styles.modalOverlay}>
         <View style={styles.modalContent}>
           <ActivityIndicator size="large" color={Colors.PRIMARAY} />
-          <Text style={styles.loadText}>Please Wait...</Text>
+          <Text style={styles.loadText}>{message}</Text>
         </View>
       </Pressable>
     </Modal>
@@ -25,9 +25,10 @@ const styles = StyleSheet.create({
   modalContent: {
     backgroundColor: Colors.WHITE,
     borderRadius: 10,
-    width: '30%',
+    width: '50%',
     elevation: 5,
     padding: 20,
+    alignItems: 'center',
   },
   loadText: {
     marginTop: 20,

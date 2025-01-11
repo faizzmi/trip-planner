@@ -32,11 +32,16 @@ export default function SignIn() {
 
     let isValid = true;
 
+    const isValidEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
     if (!email) {
       setHasError((prev) => ({ ...prev, email: true }));
       isValid = false;
     } else {
       setHasError((prev) => ({ ...prev, email: false }));
+      if (!isValidEmail) {
+        setHasError((prev) => ({ ...prev, email: true }));
+        isValid = false;
+      }
     }
 
     if (!password) {
@@ -44,6 +49,10 @@ export default function SignIn() {
       isValid = false;
     } else {
       setHasError((prev) => ({ ...prev, password: false }));
+      if (password.length < 6) {
+        setHasError((prev) => ({ ...prev, password: true }));
+        isValid = false;
+      }
     }
 
     if (!isValid) {
@@ -58,14 +67,19 @@ export default function SignIn() {
       })
       .catch((error) => {
         const errorCode = error.code;
-        if (errorCode === 'auth/invalid-credential') {
-          setErrorMessage('Invalid credentials');
-          setNotiModal(true);
-        } else {
-          setNotiModal(true);
-          setErrorMessage('An error occurred. Please try again.');
+        let errorMessage = 'An error occurred. Please try again.';
+
+        if (errorCode === 'auth/user-not-found') {
+          errorMessage = 'No account found with this email.';
+        } else if (errorCode === 'auth/wrong-password') {
+          errorMessage = 'Incorrect password.';
+        } else if (errorCode === 'auth/invalid-credential') {
+          errorMessage = 'Invalid credentials.';
         }
-      setLoadModal(false)
+        
+        setNotiModal(true);
+        setErrorMessage(errorMessage);
+        setLoadModal(false);
     });
   };
 

@@ -25,18 +25,20 @@ export default function ModalMessage({
           <Text style={{ textAlign: 'center', margin: 20 }}>{message}</Text>
           <View style={styles.buttonContainer}>
             <TouchableOpacity
-              style={[styles.modalItem,{ borderBottomLeftRadius: 5}, hoverConfirm && { backgroundColor: 'green' }]}
+              style={[styles.modalItem, { borderBottomLeftRadius: 5 }, hoverConfirm && { backgroundColor: 'green' }]}
               onPressIn={() => setHoverConfirm(true)}
               onPressOut={() => setHoverConfirm(false)}
               onPress={onConfirm}
+              accessibilityLabel={confirmText}
             >
               <Text style={styles.modalText}>{confirmText}</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.modalItem, { borderBottomRightRadius: 5}, hoverCancel && { backgroundColor: 'red' }]}
+              style={[styles.modalItem, { borderBottomRightRadius: 5 }, hoverCancel && { backgroundColor: 'red' }]}
               onPressIn={() => setHoverCancel(true)}
               onPressOut={() => setHoverCancel(false)}
               onPress={onClose}
+              accessibilityLabel={cancelText}
             >
               <Text style={styles.modalText}>{cancelText}</Text>
             </TouchableOpacity>
@@ -70,7 +72,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     width: '50%',
     borderWidth: 1,
-    borderColor: Colors.GRAY
+    borderColor: Colors.GRAY,
   },
   modalText: {
     fontFamily: 'outfit',

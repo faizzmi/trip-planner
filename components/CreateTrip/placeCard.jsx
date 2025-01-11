@@ -1,5 +1,5 @@
 import { View, Image, Text, StyleSheet } from 'react-native'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Colors } from '../../constants/Colors'
 import {getPlacePhoto} from '../../utils/googlePlaceUtils'
 
@@ -17,12 +17,11 @@ export default function PlaceCard({destination}) {
     }, [destination?.placeName]);
 
   return (
-    <View>
-        <Image source={require('./../../assets/images/card-trip.jpg')}
-        // <Image source={require('./../../assets/images/card-trip.jpg')}
+    <View style={{backgroundColor: Colors.WHITE}}>
+        <Image source={photoUrl? {uri: photoUrl} : require('./../../assets/images/card-trip.jpg')}
             style={{
                 width: '100%',
-                height: 300,
+                height: 250,
                 borderTopLeftRadius: 15,
                 borderTopRightRadius: 15,
         }}/>
@@ -53,7 +52,7 @@ export default function PlaceCard({destination}) {
 const styles = StyleSheet.create({
     container: {
         height: 170,
-        backgroundColor: Colors.LIGHT_GRAY,
+        backgroundColor: Colors.WHITE,
         borderBottomLeftRadius: 15,
         borderBottomRightRadius: 15,
         padding: 20,

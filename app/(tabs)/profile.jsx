@@ -1,5 +1,5 @@
-import { StyleSheet, Image, Text, View, ScrollView, TextInput, TouchableOpacity } from 'react-native';
-import React, { useContext, useEffect, useState } from 'react';
+import { StyleSheet, Image, Text, View, ScrollView, TextInput, TouchableOpacity} from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
 import { auth } from './../../configs/FirebaseConfig';
 import { useNavigation, useRouter } from 'expo-router';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -7,8 +7,14 @@ import { Colors } from '../../constants/Colors';
 import { getAuth, signOut } from 'firebase/auth';
 import ModalMessage from '../../components/ModalMessage';
 import NotificationMessage from '../../components/NotificationMessage';
+import { collection, query, where, doc, setDoc, getDocs } from 'firebase/firestore';
+import { db } from './../../configs/FirebaseConfig';
+import * as ImagePicker from 'expo-image-picker';
+import LoadingModal from '../../components/LoadingModal';
+import Feather from '@expo/vector-icons/Feather';
 
 export default function Profile() {
+  const isMounted = useRef(true); 
   const user = auth.currentUser;
   const navigation = useNavigation();
   const router = useRouter();
@@ -17,14 +23,20 @@ export default function Profile() {
   const [notiModal, setNotiModal] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [profileData, setProfileData] = useState({
-    name: user?.displayName || '',
-    phoneNumber: user?.phoneNumber || '',
+    name: '',
+    phoneNumber: '',
+    email: user?.email || '',
     nationality: '',
     religion: '',
+    profilePicture: ''
   });
+  const [tempProfileData, setTempProfileData] = useState({ ...profileData });
 
   useEffect(() => {
+    isMounted.current = true;
+
     navigation.setOptions({
       headerShown: true,
       headerTransparent: true,
@@ -34,8 +46,64 @@ export default function Profile() {
           <Ionicons style={{ marginRight: 15 }} name="log-out" size={24} color="black" />
         </TouchableOpacity>
       ),
-    });
+    }, );
+
+    if (user) {
+      getProfileData();
+    }
+
+    return () => {
+      isMounted.current = false;
+    };
   }, []);
+
+  const getProfileData = async () => {
+    try {
+      const q = query(collection(db, 'users'), where('email', '==', user?.email));
+      const querySnapshot = await getDocs(q);
+      console.log(querySnapshot.docs[0].data())
+
+      if (!querySnapshot.empty) {
+        const data = querySnapshot.docs[0].data();
+        setProfileData((prev) => ({
+          ...prev,
+          name: data.name || '',
+          phoneNumber: data.phoneNumber || '',
+          nationality: data.nationality || '',
+          religion: data.religion || '',
+          profilePicture: data.profilePicture || ''
+        }));
+      }
+    } catch (error) {
+      console.error('Error fetching profile data:', error);
+    }
+  };
+
+  const pickImage = async () => {
+    try {
+      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!permissionResult.granted) {
+        setErrorMessage('Permission to access media library is required!');
+        setNotiModal(true)
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: 'Images',
+        allowsEditing: true,
+        quality: 1,
+      });
+
+      if (!result.canceled && isMounted.current) {
+        setTempProfileData({ ...profileData, profilePicture: result.uri });
+      }
+    } catch (error) {
+        if (isMounted.current) {
+          setNotiModal(true);
+          setErrorMessage('Error picking image');
+        }
+    }
+  };
 
   const handleLogOut = (logout) => {
     const logOut = getAuth();
@@ -46,7 +114,7 @@ export default function Profile() {
         })
         .catch((error) => {
           setNotiModal(true);
-          setErrorMessage(error)
+          setErrorMessage(error.message);
         });
     } else {
       setModalVisible(false);
@@ -54,17 +122,29 @@ export default function Profile() {
   };
 
   const toggleEdit = () => {
+    if (!isEditing) {
+      setTempProfileData({ ...profileData });
+    }
     setIsEditing(!isEditing);
   };
 
-  const handleSave = () => {
-    setIsEditing(false);
-    setNotiModal(true);
-    setSuccessMessage('Profile saved')
-  };
+  const handleSave = async () => {
+    try {
+      const userDocRef = doc(db, 'users', user.uid);
+      await setDoc(userDocRef, { ...tempProfileData }, { merge: true });
 
-  const handleChange = (key, value) => {
-    setProfileData({ ...profileData, [key]: value });
+      setProfileData({ ...tempProfileData });
+      setTripData((prevData) => ({
+          muslimFriendly: profileData.religion,
+      }));
+
+      setIsEditing(false);
+      setNotiModal(true);
+      setSuccessMessage('Profile saved successfully!'); 
+    } catch (error) {
+      setNotiModal(true);
+      setErrorMessage('Error saving profile');
+    }
   };
 
   return (
@@ -73,8 +153,16 @@ export default function Profile() {
 
       <View style={styles.profileCard}>
         <View style={styles.profileSection}>
-          <Image source={require('./../../assets/images/profile-picture.jpg')} style={styles.profileImage} />
+          <TouchableOpacity onPress={() => isEditing && pickImage()}>
+            <Image
+              source={profileData.profilePicture ? { uri: profileData.profilePicture } : require('./../../assets/images/profile-picture.jpg')}
+              style={styles.profileImage}
+            />
+            {isEditing && <Feather 
+            style={styles.editPhoto} name="edit" size={24} color="white" />}
+          </TouchableOpacity>
           <Text style={styles.name}>{profileData.name || 'Your Name'}</Text>
+          {uploading && <LoadingModal visible={uploading} />}
         </View>
 
         <View style={styles.detailsSection}>
@@ -83,9 +171,9 @@ export default function Profile() {
             <TextInput
               style={[styles.input, !isEditing && styles.disableInput]}
               placeholder="Your Name"
-              value={profileData.name}
+              value={isEditing ? tempProfileData.name : profileData.name}
               editable={isEditing}
-              onChangeText={(value) => handleChange('name', value)}
+              onChangeText={(value) => setTempProfileData({ ...tempProfileData, name: value })}
             />
           </View>
 
@@ -104,9 +192,9 @@ export default function Profile() {
             <TextInput
               style={[styles.input, !isEditing && styles.disableInput]}
               placeholder="Your Phone Number"
-              value={profileData.phoneNumber}
+              value={isEditing ? tempProfileData.phoneNumber : profileData.phoneNumber}
               editable={isEditing}
-              onChangeText={(value) => handleChange('phoneNumber', value)}
+              onChangeText={(value) => setTempProfileData({ ...tempProfileData, phoneNumber: value })}
             />
           </View>
 
@@ -115,9 +203,9 @@ export default function Profile() {
             <TextInput
               style={[styles.input, !isEditing && styles.disableInput]}
               placeholder="Your Nationality"
-              value={profileData.nationality}
+              value={isEditing ? tempProfileData.nationality : profileData.nationality}
               editable={isEditing}
-              onChangeText={(value) => handleChange('nationality', value)}
+              onChangeText={(value) => setTempProfileData({ ...tempProfileData, nationality: value })}
             />
           </View>
 
@@ -126,9 +214,9 @@ export default function Profile() {
             <TextInput
               style={[styles.input, !isEditing && styles.disableInput]}
               placeholder="Your Religion"
-              value={profileData.religion}
+              value={isEditing ? tempProfileData.religion : profileData.religion}
               editable={isEditing}
-              onChangeText={(value) => handleChange('religion', value)}
+              onChangeText={(value) => setTempProfileData({ ...tempProfileData, religion: value })}
             />
           </View>
 
@@ -138,12 +226,15 @@ export default function Profile() {
             </TouchableOpacity>
           )}
 
-          <TouchableOpacity style={isEditing ? styles.editButton : styles.saveButton} onPress={toggleEdit}>
-            <Text style={isEditing ? styles.editButtonText : styles.saveButtonText}>{isEditing ? 'Cancel' : 'Edit Profile'}</Text>
+          <TouchableOpacity
+            style={isEditing ? styles.editButton : styles.saveButton}
+            onPress={toggleEdit}
+          >
+            <Text style={isEditing ? styles.editButtonText : styles.saveButtonText}>
+              {isEditing ? 'Cancel' : 'Edit Profile'}
+            </Text>
           </TouchableOpacity>
-          
         </View>
-
       </View>
 
       <ModalMessage
@@ -154,13 +245,12 @@ export default function Profile() {
       />
       {(errorMessage || successMessage) && (
         <NotificationMessage
-            visible={notiModal}
-            id={errorMessage ? 1 : 2} 
-            message={errorMessage || successMessage}
-            onClose={() => setNotiModal(false)}
+          visible={notiModal}
+          id={errorMessage ? 1 : 2}
+          message={errorMessage || successMessage}
+          onClose={() => setNotiModal(false)}
         />
       )}
-
     </ScrollView>
   );
 }
@@ -185,7 +275,7 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    marginTop: 60
+    marginTop: 60,
   },
   name: {
     marginTop: 10,
@@ -246,5 +336,14 @@ const styles = StyleSheet.create({
     padding: 20,
     elevation: 10,
     boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)',
+  },
+  editPhoto: {
+    marginTop: -40, 
+    left: 80, 
+    backgroundColor: 'rgba(0, 0, 0 ,0.3)',
+    padding: 10,
+    width: '35%',
+    borderRadius: 20
   }
+  
 });

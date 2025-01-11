@@ -6,13 +6,16 @@ import { useState } from 'react';
 import CalendarPicker from "react-native-calendar-picker";
 import moment from 'moment';
 import { CreateTripContext } from '../../context/CreateTripContext';
+import NotificationMessage from '../../components/NotificationMessage';
 
 export default function SelectDates() {
 
     const navigation = useNavigation();
     const router = useRouter();
     const [startDate, setStartDate] = useState();
-    const [endDate, setEndDate] = useState();
+    const [endDate, setEndDate] = useState(); 
+    const [errorMessage, setErrorMessage] = useState('');
+    const [notiModal, setNotiModal] = useState();
     const {tripData, setTripData} = useContext(CreateTripContext);
     
 
@@ -36,7 +39,8 @@ export default function SelectDates() {
     const onDateSelectionCountinue = () => {
 
         if(!startDate&&!endDate){
-            // ToastAndroid.show('Please select start and end date',ToastAndroid.LONG)
+            setErrorMessage('Please select start and end date')
+            setNotiModal(true)
             return;
         }
 
@@ -95,6 +99,9 @@ export default function SelectDates() {
                 }}
             >Countinue</Text>
         </TouchableOpacity>
+        {errorMessage && (
+            <NotificationMessage visible={notiModal} id={1} message={errorMessage} onClose={() => setNotiModal(false)}/>
+        )}
     </View>
   )
 }

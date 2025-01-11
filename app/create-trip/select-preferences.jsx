@@ -5,14 +5,16 @@ import { Colors } from '../../constants/Colors';
 import { CreateTripContext } from '../../context/CreateTripContext';
 import { SelectTravelPreference } from '../../constants/Options';
 import OptionCard from '../../components/CreateTrip/OptionCard';
+import NotificationMessage from '../../components/NotificationMessage';
 
 export default function SelectPreferences() {
 
     const navigation = useNavigation();
     const router = useRouter();
     const [selectedPreference, setSelectedPreference] = useState();
-    const [isMuslimFriendly, setIsMuslimFriendly] = useState(false);
-    const {tripData, setTripData} = useContext(CreateTripContext);
+    const {tripData, setTripData} = useContext(CreateTripContext); 
+    const [errorMessage, setErrorMessage] = useState('');
+    const [notiModal, setNotiModal] = useState();
 
     useEffect(() => {
         navigation.setOptions({
@@ -26,12 +28,13 @@ export default function SelectPreferences() {
         setTripData({
             ...tripData,
             preference: selectedPreference?.title,
-            muslimFriendly: isMuslimFriendly, 
         })
-    }, [selectedPreference, isMuslimFriendly]);
+    }, [selectedPreference]);
 
     const onClickCountinue = () => {
         if(!selectedPreference){
+            setErrorMessage('Please choose who you travel with?');
+            setNotiModal(true);
             return;
         }
 
@@ -61,23 +64,6 @@ export default function SelectPreferences() {
         }}>Choose your preferred travel style</Text>
         </View>
 
-        
-        <View style={{ marginTop: 20, flexDirection: 'row', alignItems: 'center' }}>
-            <CheckBox
-                value={isMuslimFriendly}
-                onValueChange={setIsMuslimFriendly}
-                style={{ marginRight: 10 }}
-            />
-            <Text style={{
-                fontFamily: 'outfit-medium',
-                fontSize: 18,
-                color: Colors.GRAY,
-            }}>
-                Muslim-friendly trip
-            </Text>
-        </View>
-
-
         <FlatList 
         data={SelectTravelPreference}
             renderItem={(item, index) => (
@@ -105,6 +91,9 @@ export default function SelectPreferences() {
                 }}
             >Countinue</Text>
         </TouchableOpacity>
+        {errorMessage && (
+            <NotificationMessage visible={notiModal} id={1} message={errorMessage} onClose={() => setNotiModal(false)}/>
+        )}
     </View>
   )
 }

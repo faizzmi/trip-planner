@@ -23,10 +23,10 @@ export default function ReviewTrip() {
     <View style={{
             padding: 25,
             paddingTop: 75,
-            backgroundColor: Colors.WHITE,
+            backgroundColor: Colors.L_WHITE,
             height: '100%'
         }}>
-      <Text style={{
+        <Text style={{
             fontFamily: 'outfit-bold',
             fontSize: 35,
             marginTop: 20
@@ -39,140 +39,141 @@ export default function ReviewTrip() {
             }}>Before generating your trip, please review your selection</Text>
         </View>
 
-        <View style={{
-            marginTop: 40,
-            display: 'flex',
-            flexDirection: 'row',
-            gap: 20
-        }}>
-            <Text style={{fontSize:30}}>📌</Text>
-            <View>
-                <Text style={{
-                    fontFamily: 'outfit',
-                    fontSize: 20,
-                    color: Colors.GRAY
-                }}>Destination</Text>
-                <Text style={{
-                    fontFamily: 'outfit-medium',
-                    fontSize: 20,
-                }}>{tripData?.locationInfo}</Text>
-            </View>  
+        <View style={{marginTop: 40, padding: 25, elevation: 3, backgroundColor: Colors.WHITE, borderWidth: 1, borderColor: Colors.GRAY, borderRadius: 15}}>
+            <View style={{
+                display: 'flex',
+                flexDirection: 'row',
+                gap: 20
+            }}>
+                <Text style={{fontSize:30}}>📌</Text>
+                <View>
+                    <Text style={{
+                        fontFamily: 'outfit',
+                        fontSize: 20,
+                        color: Colors.GRAY
+                    }}>Destination</Text>
+                    <Text style={{
+                        fontFamily: 'outfit-medium',
+                        fontSize: 20,
+                    }}>{tripData?.locationInfo}</Text>
+                </View>  
 
-        </View>
-
-        <View style={{
-            marginTop: 25,
-            display: 'flex',
-            flexDirection: 'row',
-            gap: 20
-        }}>
-            <Text style={{fontSize:30}}>📅</Text>
-            <View>
-                <Text style={{
-                    fontFamily: 'outfit',
-                    fontSize: 20,
-                    color: Colors.GRAY
-                }}>Travel Date</Text>
-                <Text style={{
-                    fontFamily: 'outfit-medium',
-                    fontSize: 20,
-                }}>{moment(tripData?.startDate).format('DD MMM') +" To "+moment(tripData?.endDate).format('DD MMM')+"  " }
-                ({tripData?.noOfDays} days)
-                </Text>
             </View>
-        </View>
 
-        
-        <View style={{
-            marginTop: 25,
-            display: 'flex',
-            flexDirection: 'row',
-            gap: 20
-        }}>
-            <Text style={{fontSize:30}}>✈️</Text>
-            <View>
-                <Text style={{
-                    fontFamily: 'outfit',
-                    fontSize: 20,
-                    color: Colors.GRAY
-                }}>Who is Travelling</Text>
-                <Text style={{
-                    fontFamily: 'outfit-medium',
-                    fontSize: 20,
-                }}>{tripData?.traveler?.title}
-                </Text>
+            <View style={{
+                marginTop: 25,
+                display: 'flex',
+                flexDirection: 'row',
+                gap: 20
+            }}>
+                <Text style={{fontSize:30}}>📅</Text>
+                <View>
+                    <Text style={{
+                        fontFamily: 'outfit',
+                        fontSize: 20,
+                        color: Colors.GRAY
+                    }}>Travel Date</Text>
+                    <Text style={{
+                        fontFamily: 'outfit-medium',
+                        fontSize: 20,
+                    }}>{moment(tripData?.startDate).format('DD MMM') +" To "+moment(tripData?.endDate).format('DD MMM')+"  " }
+                    ({tripData?.noOfDays} days)
+                    </Text>
+                </View>
             </View>
-        </View>
 
-        
-        <View style={{
-            marginTop: 25,
-            display: 'flex',
-            flexDirection: 'row',
-            gap: 20
-        }}>
-            <Text style={{fontSize:30}}>💲</Text>
-            <View>
-                <Text style={{
-                    fontFamily: 'outfit',
-                    fontSize: 20,
-                    color: Colors.GRAY
-                }}>Budget</Text>
-                <Text style={{
-                    fontFamily: 'outfit-medium',
-                    fontSize: 20,
-                }}>{tripData?.budget}
-                </Text>
+            
+            <View style={{
+                marginTop: 25,
+                display: 'flex',
+                flexDirection: 'row',
+                gap: 20
+            }}>
+                <Text style={{fontSize:30}}>✈️</Text>
+                <View>
+                    <Text style={{
+                        fontFamily: 'outfit',
+                        fontSize: 20,
+                        color: Colors.GRAY
+                    }}>Who is Travelling</Text>
+                    <Text style={{
+                        fontFamily: 'outfit-medium',
+                        fontSize: 20,
+                    }}>{tripData?.traveler?.title}
+                    </Text>
+                </View>
             </View>
-        </View>
 
-        <View style={{
-            marginTop: 25,
-            display: 'flex',
-            flexDirection: 'row',
-            gap: 20
-        }}>
-            <Text style={{fontSize:30}}>🧗</Text>
-            <View>
-                <Text style={{
-                    fontFamily: 'outfit',
-                    fontSize: 20,
-                    color: Colors.GRAY
-                }}>Preference</Text>
-                <Text style={{
-                    fontFamily: 'outfit-medium',
-                    fontSize: 20,
-                }}>{tripData?.preference}
-                </Text>
+            
+            <View style={{
+                marginTop: 25,
+                display: 'flex',
+                flexDirection: 'row',
+                gap: 20
+            }}>
+                <Text style={{fontSize:30}}>💲</Text>
+                <View>
+                    <Text style={{
+                        fontFamily: 'outfit',
+                        fontSize: 20,
+                        color: Colors.GRAY
+                    }}>Budget</Text>
+                    <Text style={{
+                        fontFamily: 'outfit-medium',
+                        fontSize: 20,
+                    }}>{tripData?.budget}
+                    </Text>
+                </View>
             </View>
-        </View>
 
-        <View style={{
-            marginTop: 25,
-            display: 'flex',
-            flexDirection: 'row',
-            gap: 20
-        }}>
-            <Text style={{fontSize:30}}>🕌</Text>
-            <View>
-                <Text style={{
-                    fontFamily: 'outfit',
-                    fontSize: 20,
-                    color: Colors.GRAY
-                }}>Muslim Friendly</Text>
-                <Text style={{
-                    fontFamily: 'outfit-medium',
-                    fontSize: 20,
-                }}>{tripData?.muslimFriendly ? 'Muslim Friendly' : 'Not Muslim Friendly'}
+            <View style={{
+                marginTop: 25,
+                display: 'flex',
+                flexDirection: 'row',
+                gap: 20
+            }}>
+                <Text style={{fontSize:30}}>🧗</Text>
+                <View>
+                    <Text style={{
+                        fontFamily: 'outfit',
+                        fontSize: 20,
+                        color: Colors.GRAY
+                    }}>Preference</Text>
+                    <Text style={{
+                        fontFamily: 'outfit-medium',
+                        fontSize: 20,
+                    }}>{tripData?.preference}
+                    </Text>
+                </View>
+            </View>
 
-                </Text>
+            <View style={{
+                marginTop: 25,
+                display: 'flex',
+                flexDirection: 'row',
+                gap: 20
+            }}>
+                <Text style={{fontSize:30}}>🕌</Text>
+                <View>
+                    <Text style={{
+                        fontFamily: 'outfit',
+                        fontSize: 20,
+                        color: Colors.GRAY
+                    }}>Muslim Friendly</Text>
+                    <Text style={{
+                        fontFamily: 'outfit-medium',
+                        fontSize: 20,
+                    }}>{tripData?.muslimFriendly ? 'Muslim Friendly' : 'Not Muslim Friendly'}
+
+                    </Text>
+                </View>
             </View>
         </View>
 
         <TouchableOpacity
             onPress={() => router.replace('/create-trip/generate-trip')}
             style={{
-                marginTop: 80,
+                marginTop: 50,
                 padding:15,
                 backgroundColor:Colors.PRIMARAY,
                 borderRadius:15,

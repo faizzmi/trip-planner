@@ -5,14 +5,16 @@ import { useNavigation, useRouter } from 'expo-router';
 import { CreateTripContext } from '../../context/CreateTripContext';
 import OptionCard from '../../components/CreateTrip/OptionCard';
 import { SelectBudgetOptions } from '../../constants/Options';
+import NotificationMessage from '../../components/NotificationMessage';
 
 export default function SelectBudget() {
-
 
     const navigation = useNavigation();
     const router = useRouter();
     const [selectedOption, setSelectedOption] = useState();
-    const {tripData, setTripData} = useContext(CreateTripContext);
+    const {tripData, setTripData} = useContext(CreateTripContext); 
+    const [errorMessage, setErrorMessage] = useState('');
+    const [notiModal, setNotiModal] = useState();
         
     useEffect(() => {
         navigation.setOptions({
@@ -31,6 +33,8 @@ export default function SelectBudget() {
 
     const onClickCountinue = () => {
         if(!selectedOption){
+            setErrorMessage('Please select your budget')
+            setNotiModal(true)
             return;
         }
 
@@ -87,6 +91,9 @@ export default function SelectBudget() {
                 }}
             >Countinue</Text>
         </TouchableOpacity>
+        {errorMessage && (
+          <NotificationMessage visible={notiModal} id={1} message={errorMessage} onClose={() => setNotiModal(false)}/>
+        )}
     </View>
   )
 }

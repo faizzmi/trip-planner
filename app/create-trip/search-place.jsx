@@ -38,15 +38,16 @@ export default function SearchPlace() {
             const FINAL_PROMPT = SEARCH_PROMPT.replace('{search}', search);
             const result = await searchTravelDestination.sendMessage(FINAL_PROMPT);
             const response = JSON.parse(result.response.text());
+            console.log(response)
 
-            if (response.placeName == null) {
+            if (response[0].placeName == null) {
                 setLoading(false);
                 setDestination(null);
                 return;
             }
 
             setLoading(false);
-            setDestination(response);
+            setDestination(response[0]);
             setCard(true);
         } catch (error) {
             setLoading(false);
@@ -66,7 +67,7 @@ export default function SearchPlace() {
             ...prevData,
             locationInfo: destination.placeName,
         }));
-
+ 
         router.push('/create-trip/select-traveler');
     };
 

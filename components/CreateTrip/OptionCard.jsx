@@ -3,13 +3,10 @@ import React from 'react';
 import { Colors } from '../../constants/Colors';
 
 export default function OptionCard({ option, selectedOption }) {
-  // Function to limit words in a string
-  const truncateText = (text, maxWords) => {
-    const words = text.split(' ');
-    return words.length > maxWords ? words.slice(0, maxWords).join(' ') + '...' : text;
-  };
-
-  const isSelected = selectedOption?.id === option.item.id; // Check if selected
+  
+  console.log('OptionCard', option);
+  console.log('selectedOption', selectedOption);
+  const isSelected = selectedOption?.id === option.id; // Check if selected
 
   return (
     <View
@@ -18,15 +15,15 @@ export default function OptionCard({ option, selectedOption }) {
         isSelected && styles.selectedCard,
       ]}
       accessible={true}
-      accessibilityLabel={`Option card: ${option?.item.title}`}
+      accessibilityLabel={`Option card: ${option?.title}`}
     >
       <View>
-        <Text style={styles.title}>{option?.item.title}</Text>
+        <Text style={styles.title}>{option?.title}</Text>
         <Text style={styles.description}>
-          {truncateText(option?.item.desc, 6)}
+          {option?.desc}
         </Text>
       </View>
-      <Text style={styles.icon}>{option?.item.icon}</Text>
+      <Text style={styles.icon}>{option?.icon}</Text>
     </View>
   );
 }
@@ -41,7 +38,7 @@ const styles = StyleSheet.create({
     minHeight: 80,
     elevation: 10,
     borderWidth: 1,
-    borderColor: Colors.LIGHT_GRAY,
+    borderColor: Colors.GRAY,
   },
   selectedCard: {
     borderWidth: 3,

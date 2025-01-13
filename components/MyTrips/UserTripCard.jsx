@@ -42,7 +42,7 @@ export default function UserTripCard({ trip }) {
       <View>
         <Text style={styles.destination}>{placeName || 'Unknown Destination'}</Text>
         <Text style={styles.date}>
-          {tripData.startDate ? moment(tripData.startDate).format('DD MMM YYYY') : 'No Start Date'}
+          📅 {tripData.startDate ? moment(tripData.startDate).format('DD MMM YYYY') : 'No Start Date'}
         </Text>
         <Text style={styles.details}>
           ⚡ {tripData.traveler?.title || 'Unknown Traveler'}

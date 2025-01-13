@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, ActivityIndicator, BackHandler } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import { Colors } from '../../constants/Colors';
 import { useNavigation, useRouter } from 'expo-router';

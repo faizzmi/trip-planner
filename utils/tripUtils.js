@@ -1,14 +1,23 @@
 import { now } from 'moment';
 
+const sortDate = (trips) => {
+    return [...trips].sort((a, b) => {
+        const dateA = new Date(JSON.parse(a.tripData).startDate);
+        const dateB = new Date(JSON.parse(b.tripData).startDate);
+        return dateA - dateB;
+    });
+}
+
 /**
  * Function to determine if the trip is in the past
  * @param {Object} trip - The trip object
  * @returns {boolean} - Returns true if the trip is historical (ended in the past)
  */
 export const isHistoryTrip = (trip) => {
-    const startDate = new Date(JSON.parse(trip.tripData).startDate);
-    const endDate = new Date(JSON.parse(trip.tripData).endDate);
-    return endDate < now();
+    return sortDate(trip).filter((trip) => {
+        const endDate = new Date(JSON.parse(trip.tripData).endDate);
+        return endDate < now();
+    });;
 };
 
 /**
@@ -17,11 +26,10 @@ export const isHistoryTrip = (trip) => {
  * @returns {Array} - The sorted array of trips
  */
 export const sortTripsByStartDate = (trips) => {
-    return [...trips].sort((a, b) => {
-        const dateA = new Date(JSON.parse(a.tripData).startDate);
-        const dateB = new Date(JSON.parse(b.tripData).startDate);
-        return dateA - dateB;
-    });
+    return sortDate(trips).filter((trip) => {
+        const endDate = new Date(JSON.parse(trip.tripData).endDate);
+        return endDate >= now();
+    });;
 };
 
 /**

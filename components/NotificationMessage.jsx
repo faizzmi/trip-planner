@@ -8,7 +8,7 @@ export default function NotificationMessage({ visible, id, message, onClose }) {
         if (visible) {
             const timer = setTimeout(() => {
                 onClose?.();
-            }, 3000);
+            }, 2000);
 
             return () => clearTimeout(timer);
         }
